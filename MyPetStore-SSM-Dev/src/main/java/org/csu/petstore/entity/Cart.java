@@ -6,13 +6,11 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("category")
-public class Category {
-    @TableId(value = "catid")
-    private String categoryId;
-    private String name;
-    @TableField("descn")
-    private String description;
-
-
+@TableName("cart")
+public class Cart {
+    @TableId(value = "userid")
+    private String username;
+    @TableField(value = "itemid")
+    private String itemId;
+    private int quantity;
 }

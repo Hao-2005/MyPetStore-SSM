@@ -3,16 +3,11 @@ package org.csu.petstore.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Setter
-@Getter
 @Data
-public class Item
-{
+public class Item {
     @TableId(value = "itemid")
     private String itemId;
     @TableField(value = "productid")

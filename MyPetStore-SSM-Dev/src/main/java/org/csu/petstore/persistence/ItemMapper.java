@@ -5,7 +5,5 @@ import org.csu.petstore.entity.Item;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ItemMapper extends BaseMapper<Item>
-{
-
+public interface ItemMapper extends BaseMapper<Item> {
 }

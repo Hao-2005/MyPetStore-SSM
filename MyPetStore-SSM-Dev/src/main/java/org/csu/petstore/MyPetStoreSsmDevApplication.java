@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @MapperScan("org.csu.petstore.persistence")
 public class MyPetStoreSsmDevApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MyPetStoreSsmDevApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MyPetStoreSsmDevApplication.class, args);
+    }
 
 }

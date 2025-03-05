@@ -1,5 +1,6 @@
 package org.csu.petstore.controller;
 
+import org.csu.petstore.entity.Product;
 import org.csu.petstore.service.CatalogService;
 import org.csu.petstore.vo.CategoryVO;
 import org.csu.petstore.vo.ItemVO;
@@ -9,23 +10,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
-import javax.xml.catalog.Catalog;
+import java.util.List;
 
 @Controller
 @RequestMapping("/catalog")
-public class CatalogController
-{
+@SessionAttributes(value = {"productList"})
+public class CatalogController {
+
     @Autowired
     private CatalogService catalogService;
 
-    @GetMapping("index")
+    @GetMapping("/index")
     public String index()
     {
         return "catalog/main";
     }
 
-    @GetMapping("viewCategory")
+    @GetMapping("/viewCategory")
     public String viewCategory(String categoryId, Model model)
     {
         CategoryVO category = catalogService.getCategory(categoryId);
@@ -33,13 +36,13 @@ public class CatalogController
         return "catalog/category";
     }
 
-    @GetMapping("returnMain")
+    @GetMapping("/returnMain")
     public String returnMain(Model model)
     {
         return "catalog/main";
     }
 
-    @GetMapping("viewProduct")
+    @GetMapping("/viewProduct")
     public String viewProduct(String productId, Model model)
     {
         ProductVO product = catalogService.getProduct(productId);
@@ -47,7 +50,7 @@ public class CatalogController
         return "catalog/product";
     }
 
-    @GetMapping("viewItem")
+    @GetMapping("/viewItem")
     public String viewItem(String itemId, Model model)
     {
         ItemVO item = catalogService.getItem(itemId);
@@ -57,4 +60,10 @@ public class CatalogController
         return "catalog/item";
     }
 
+    @GetMapping("/search")
+    public String search(String keyword, Model model){
+        List<Product> productList = catalogService.getProductList(keyword);
+        model.addAttribute("productList", productList);
+        return "catalog/searchProducts";
+    }
 }
