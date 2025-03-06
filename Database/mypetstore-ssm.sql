@@ -11,7 +11,7 @@
  Target Server Version : 80039 (8.0.39)
  File Encoding         : 65001
 
- Date: 07/03/2025 02:18:28
+ Date: 07/03/2025 02:28:23
 */
 
 SET NAMES utf8mb4;
@@ -942,7 +942,9 @@ CREATE TABLE `resetpassword`  (
 -- ----------------------------
 -- Records of resetpassword
 -- ----------------------------
-INSERT INTO `resetpassword` VALUES ('j2ee');
+INSERT INTO `resetpassword` VALUES ('CSUstudent');
+INSERT INTO `resetpassword` VALUES ('forgetfulMan');
+INSERT INTO `resetpassword` VALUES ('XiheLiu');
 
 -- ----------------------------
 -- Table structure for sequence
