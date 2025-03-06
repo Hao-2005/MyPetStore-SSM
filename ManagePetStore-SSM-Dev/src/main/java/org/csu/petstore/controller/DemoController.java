@@ -21,4 +21,9 @@ public class DemoController
         model.addAttribute("message", "hello thymeleaf");
         return "demo1";
     }
+
+    @GetMapping("/")
+    public String index(){
+        return "common/index";
+    }
 }

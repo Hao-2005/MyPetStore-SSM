@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table>
+    <tr th:each="m:${user}">
+        <td th:text="${m.userId}"></td>
+        <td th:text="${m.password}"></td>
+        <td th:text="${m.userEmail}"></td>
+    </tr>
+</table>
+    <br/>
+    <a href="../resetPassword">click me to reset password</a>
+</body>
+</html>
