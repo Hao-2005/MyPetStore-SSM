@@ -27,6 +27,66 @@ export const statistics = {
             itemId: "EST-88",
             value: 200
         },
+        {
+            name: "Goldfish",
+            itemId: "EST-67",
+            value: 314
+        },
+        {
+            name: "Tiger Shard",
+            itemId: "EST-77",
+            value: 80
+        },
+        {
+            name: "Dolphin Shard",
+            itemId: "EST-88",
+            value: 200
+        },
+        {
+            name: "Goldfish",
+            itemId: "EST-67",
+            value: 314
+        },
+        {
+            name: "Tiger Shard",
+            itemId: "EST-77",
+            value: 80
+        },
+        {
+            name: "Dolphin Shard",
+            itemId: "EST-88",
+            value: 200
+        },
+        {
+            name: "Tiger Shard",
+            itemId: "EST-77",
+            value: 80
+        },
+        {
+            name: "Dolphin Shard",
+            itemId: "EST-88",
+            value: 200
+        },
+        {
+            name: "Tiger Shard",
+            itemId: "EST-77",
+            value: 80
+        },
+        {
+            name: "Dolphin Shard",
+            itemId: "EST-88",
+            value: 200
+        },
+        {
+            name: "Tiger Shard",
+            itemId: "EST-77",
+            value: 80
+        },
+        {
+            name: "Dolphin Shard",
+            itemId: "EST-88",
+            value: 200
+        },
 
     ]
 } 

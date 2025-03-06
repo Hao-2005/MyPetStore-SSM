@@ -1,4 +1,8 @@
+'use client'
+
 import Image from "next/image";
+import { FormEvent } from "react";
+import { springBoot } from "./config";
 
 export default function Home() {
   return (
@@ -12,7 +16,7 @@ export default function Home() {
         <div className="flex-1 text-black w-1/2
           self-center
           flex flex-col justify-center">
-          <form action="" method="post"
+          <form action="" method="get" onSubmit={(e) => { handleSubmit(e) }}
             className="flex flex-col gap-4 bg-white p-4 rounded-md
             ">
             <div>
@@ -46,4 +50,21 @@ export default function Home() {
       </div>
     </div>
   );
+}
+
+async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+  const formData = new FormData(e.target as HTMLFormElement);
+  const username = formData.get("username");
+  const password = formData.get("password");
+  const url = `${springBoot}/admin/login?username=${username}&password=${password}`;
+  console.log(url);
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.status === true) {
+    localStorage.setItem("username", username as string);
+    window.location.href = "/dashboard";
+  } else {
+    alert("登录失败");
+  }
 }
