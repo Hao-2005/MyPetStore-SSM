@@ -23,4 +23,8 @@ public class UserManageController {
         return "";
     }
 
+    @GetMapping("/manageUser/userInfo")
+    public String userInfo(Model model){
+        return "";
+    }
 }

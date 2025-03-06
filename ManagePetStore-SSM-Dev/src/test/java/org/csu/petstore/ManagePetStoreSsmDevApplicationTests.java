@@ -1,34 +1,36 @@
 package org.csu.petstore;
 
 import org.csu.petstore.entity.Category;
-import org.csu.petstore.persistence.AccountMapper;
-import org.csu.petstore.persistence.CategoryMapper;
-import org.csu.petstore.persistence.SignOnMapper;
-import org.csu.petstore.service.AccountService;
+import org.csu.petstore.persistence.*;
+import org.csu.petstore.service.*;
 import org.csu.petstore.service.impl.AccountServiceImpl;
+import org.csu.petstore.service.impl.LineItemServiceImpl;
+import org.csu.petstore.service.impl.OrderServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 class ManagePetStoreSsmDevApplicationTests {
 
     @Autowired
-    private CategoryMapper categoryMapper;
+    private OrderMapper orderMapper;
 
     @Autowired
-    private AccountMapper accountMapper;
+    OrderService OrderService;
 
     @Autowired
-    private SignOnMapper signOnMapper;
+    OrderStatusService orderStatusService;
 
     @Autowired
-    AccountService accountService;
+    private OrderServiceImpl orderService;
 
 
     @Test
     void contextLoads() {
-        System.out.println(accountService.getAllUser());
-
+        System.out.println(orderStatusService.cancelOrder(1006));
     }
 }
