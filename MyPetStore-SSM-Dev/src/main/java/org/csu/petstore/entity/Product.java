@@ -2,11 +2,12 @@ package org.csu.petstore.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-public class Product
-{
+@TableName("product")
+public class Product {
     @TableId(value = "productid")
     private String productId;
     @TableField("category")
@@ -14,4 +15,5 @@ public class Product
     private String name;
     @TableField("descn")
     private String description;
+
 }

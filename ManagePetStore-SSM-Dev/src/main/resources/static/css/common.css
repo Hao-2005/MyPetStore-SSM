@@ -1,0 +1,241 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+html, body
+{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    background-color: #5a4fdc;
+}
+
+.sidebar
+{
+    width: 8%;
+    height: 100vh;
+    background: #5a4fdc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar nav
+{
+    margin-top: 20px;
+}
+
+.sidebar nav img
+{
+    width: 40%;
+}
+
+.sidebar a
+{
+    display: block;
+    margin: 25px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.sidebar a:hover
+{
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.sidebar a.active
+{
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.main-content
+{
+    height: 100%;
+    flex: 1;
+    border-radius: 60px 0 0 60px;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #F6F7FB;
+    flex-direction: column;
+}
+
+#header
+{
+    height: 8%;
+    display: flex;
+    padding: 10px 50px 10px 50px;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+#header .navigation a
+{
+    margin-right: 15px;
+    color: #666;
+    text-decoration: none;
+}
+
+#header .navigation a:hover
+{
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+#header .navigation img
+{
+    width: 20px;
+    height: 20px;
+}
+
+#search
+{
+    height: 8%;
+    display: flex;
+    padding: 5px 50px 10px 50px;
+    justify-content: left;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+#search select
+{
+    height: 80%;
+    width: 15%;
+    border-radius: 10px;
+    background-color: #E2E3E8;
+    border: none;
+    padding-left: 10px;
+    font-size: 15px;
+}
+
+#search input
+{
+    height: 80%;
+    width: 15%;
+    border-radius: 10px;
+    background-color: #E2E3E8;
+    border: none;
+    padding-left: 15px;
+    font-size: 15px;
+}
+
+#search img
+{
+    height: 80%;
+}
+
+#search img:hover
+{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+#information
+{
+    height: 84%;
+    display: flex;
+    padding: 10px 50px 10px 50px;
+    flex-grow: 1;
+    box-sizing: border-box;
+}
+
+#information .card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+}
+
+#information .card .table-container
+{
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+}
+
+#information .card .table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+#information .card .table-container::-webkit-scrollbar-track {
+    background: white;
+    border-radius: 2px;
+}
+
+#information .card .table-container::-webkit-scrollbar-thumb {
+    background:  rgb(239, 239, 239);
+    border-radius: 10px;
+}
+
+#information .card .table-container::-webkit-scrollbar-thumb:hover {
+    background:  rgb(179, 179, 179);
+}
+
+#information .card .table-container table
+{
+    width: 95%;
+    border-collapse: collapse;
+}
+
+#information .card .table-container table thead
+{
+    background: #F8F8FA;
+    position: sticky;
+    top: 0;
+}
+
+#information .card .table-container table tr
+{
+    height: 40px;
+}
+
+#information .card .table-container table th, #information .card .table-container table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#information .card .table-container table td button
+{
+    padding: 5px 10px;
+    border: none;
+    background: #047DD6;
+    color: white;
+    border-radius: 5px;
+}
+
+#information .card .table-container table td .viewButton
+{
+    background-color: #2DC1DB;
+}
+
+#information .card .table-container table td:last-child, #information .card .table-container table th:last-child
+{
+    width: 150px;
+    text-align: center;
+}
+
+#information .card .table-container table tbody tr:nth-child(odd)
+{
+    background: #FEFEFF;
+}
+
+#information .card .table-container table tbody tr:nth-child(even)
+{
+    background: #F8F8FA;
+}

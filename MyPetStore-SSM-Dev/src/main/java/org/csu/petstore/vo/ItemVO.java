@@ -1,16 +1,11 @@
 package org.csu.petstore.vo;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Data
-@Getter
-@Setter
-public class ItemVO
-{
+public class ItemVO {
     private String itemId;
 
     private String productId;

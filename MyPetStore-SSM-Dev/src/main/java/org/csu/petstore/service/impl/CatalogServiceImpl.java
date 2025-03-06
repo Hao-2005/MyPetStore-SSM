@@ -90,4 +90,12 @@ public class CatalogServiceImpl implements CatalogService
         itemVO.setQuantity(itemQuantity.getQuantity());
         return itemVO;
     }
+
+    @Override
+    public List<Product> getProductList(String keyword) {
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("name" , keyword);
+        List<Product> productList = productMapper.selectList(queryWrapper);
+        return productList;
+    }
 }

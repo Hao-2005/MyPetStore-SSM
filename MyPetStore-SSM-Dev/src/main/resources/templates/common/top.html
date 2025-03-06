@@ -17,22 +17,22 @@
     <div id="Menu">
         <div id="Logo">
             <div id="LogoContent">
-                <a th:href="@{/mainForm}"><img src="../images/logo-topbar.gif" alt="Logo"></a>
+                <a th:href="@{/index}"><img src="../images/logo-topbar.gif" alt="Logo"></a>
             </div>
         </div>
 
         <ul id="MenuContent">
             <!-- 用户未登录时显示 "Sign In" -->
             <li th:if="${session.loginAccount == null}">
-                <a th:href="@{/signOnForm}">Sign In</a>
+                <a th:href="@{/user/viewSignon}">Sign In</a>
             </li>
 
             <!-- 用户已登录时显示 "Sign Out" 和 "My Account" -->
             <li th:if="${session.loginAccount != null}">
-                <a th:href="@{/signOff}">Sign Out</a>
+                <a th:href="@{/user/signOff}">Sign Out</a>
             </li>
             <li th:if="${session.loginAccount != null}">
-                <a th:href="@{/editForm}">My Account</a>
+                <a th:href="@{/user/viewEdit}">My Account</a>
             </li>
 
             <li id="last">

@@ -8,11 +8,10 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
+@Data
 @Setter
 @Getter
-@Data
-public class Item
-{
+public class Item {
     @TableId(value = "itemid")
     private String itemId;
     @TableField(value = "productid")
