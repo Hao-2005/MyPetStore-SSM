@@ -20,7 +20,7 @@ public class UserManageController {
 
     @GetMapping("/manageUser/resetPassword")
     public String resetPassword(Model model){
-
+        return "";
     }
 
 }
