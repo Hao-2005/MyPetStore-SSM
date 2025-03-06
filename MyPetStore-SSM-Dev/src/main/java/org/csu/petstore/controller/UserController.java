@@ -41,16 +41,17 @@ public class UserController {
     @RequestMapping("/signon")
     public String signon(String username,
                          String password,
+                         String captchaInput,
                          @ModelAttribute("captcha") String captcha,
                          Model model) {
         Account loginAccount = userService.getAccountByUsernameAndPssword(username, password);
 
         if(!validate1(username,password)){
             model.addAttribute("signOnMsg", msg);
-            return "user/signon";
-        }else if(!judgeCaptcha((String) model.getAttribute("captchaInput"),captcha)){
+            return "account/signon";
+        }else if(!judgeCaptcha(captchaInput,captcha)){
             model.addAttribute("signOnMsg", msg);
-            return "user/signon";
+            return "account/signon";
         } else{
             if(loginAccount == null) {
                 msg = "用户名或密码错误";
@@ -59,14 +60,14 @@ public class UserController {
             }else {
                 AccountVO loginAccountVO = userService.getAccountVOByUsername(username);
                 model.addAttribute("loginAccount", loginAccountVO);
-                return "account/main";
+                return "catalog/main";
             }
         }
     }
 
     @GetMapping("/viewRegister")
     public String viewRegister() {
-        return "user/register";
+        return "account/register";
     }
 
     @RequestMapping("/register")

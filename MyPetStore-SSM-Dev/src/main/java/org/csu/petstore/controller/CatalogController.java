@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/catalog")
+@RequestMapping(value={"/catalog", "/common"})
 @SessionAttributes(value = {"productList"})
 public class CatalogController {
 
