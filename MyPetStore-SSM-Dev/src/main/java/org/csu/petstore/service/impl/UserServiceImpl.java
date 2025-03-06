@@ -23,6 +23,8 @@ public class UserServiceImpl implements UserService {
     private ProfileMapper profileMapper;
     @Autowired
     private JournalMapper journalMapper;
+    @Autowired
+    private ResetPasswordMapper resetPasswordMapper;
 
     @Override
     public Account getAccountByUsernameAndPssword(String username, String password) {
@@ -89,5 +91,10 @@ public class UserServiceImpl implements UserService {
         profileMapper.updateById(accountVO.getProfile());
         if(accountVO.getPassword() != null && accountVO.getPassword().length() > 0)
             signonMapper.updateById(accountVO.getSignon());
+    }
+
+    @Override
+    public void addResetPassword(ResetPassword resetPassword) {
+        resetPasswordMapper.insert(resetPassword);
     }
 }

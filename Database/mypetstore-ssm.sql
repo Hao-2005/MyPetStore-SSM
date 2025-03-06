@@ -11,7 +11,7 @@
  Target Server Version : 80039 (8.0.39)
  File Encoding         : 65001
 
- Date: 05/03/2025 20:21:04
+ Date: 07/03/2025 02:18:28
 */
 
 SET NAMES utf8mb4;
@@ -41,7 +41,10 @@ CREATE TABLE `account`  (
 -- Records of account
 -- ----------------------------
 INSERT INTO `account` VALUES ('ACID', 'acid@yourdomain.com', 'ABC', 'XYX', 'OK', '901 San Antonio Road', 'MS UCUP02-206', 'Palo Alto', 'CA', '94303', 'USA', '555-555-5555');
+INSERT INTO `account` VALUES ('CSUstudent', '8209230701@csu.edu.cn', 'ABCD', 'XYXY', 'OK', '902 San Antonio Road', 'MS UCUP02-210', 'Palo Alto', 'CA', '94303', 'USA', '777-777-7777');
+INSERT INTO `account` VALUES ('forgetfulMan', 'secret@qq.com', 'ABC', 'XYX', 'OK', '902 San Antonio Road', 'MS UCUP02-208', 'Palo Alto', 'CA', '94303', 'USA', '555-555-5555');
 INSERT INTO `account` VALUES ('j2ee', 'yourname@yourdomain.com', 'ABCD', 'XYXY', 'OK', '902 San Antonio Road', 'MS UCUP02-207', 'Palo Alto', 'CA', '94303', 'USA', '555-555-5555');
+INSERT INTO `account` VALUES ('XiheLiu', '123456@qq.com', 'Xihe', 'Liu', 'OK', '902 San Antonio Road', 'MS UCUP02-209', 'Palo Alto', 'CA', '94303', 'USA', '666-666-6666');
 
 -- ----------------------------
 -- Table structure for bannerdata
@@ -928,6 +931,20 @@ INSERT INTO `profile` VALUES ('ACID', 'english', 'CATS', 1, 1);
 INSERT INTO `profile` VALUES ('j2ee', 'english', 'CATS', 1, 1);
 
 -- ----------------------------
+-- Table structure for resetpassword
+-- ----------------------------
+DROP TABLE IF EXISTS `resetpassword`;
+CREATE TABLE `resetpassword`  (
+  `userId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  PRIMARY KEY (`userId`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of resetpassword
+-- ----------------------------
+INSERT INTO `resetpassword` VALUES ('j2ee');
+
+-- ----------------------------
 -- Table structure for sequence
 -- ----------------------------
 DROP TABLE IF EXISTS `sequence`;
@@ -956,7 +973,10 @@ CREATE TABLE `signon`  (
 -- Records of signon
 -- ----------------------------
 INSERT INTO `signon` VALUES ('ACID', 'ACID');
+INSERT INTO `signon` VALUES ('CSUstudent', '789');
+INSERT INTO `signon` VALUES ('forgetfulMan', '123');
 INSERT INTO `signon` VALUES ('j2ee', 'j2ee');
+INSERT INTO `signon` VALUES ('XiheLiu', '456');
 
 -- ----------------------------
 -- Table structure for supplier

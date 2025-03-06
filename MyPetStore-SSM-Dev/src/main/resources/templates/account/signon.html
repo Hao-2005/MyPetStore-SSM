@@ -23,7 +23,7 @@
             <div id="formContent">
                 <p>
                     <span>Username:</span><br>
-                    <input type="text" name="username" placeholder="Enter Your Username"> <br><br>
+                    <input type="text" name="username" id="username" placeholder="Enter Your Username"> <br><br>
 
                     <span>Password:</span><br>
                     <input type="password" name="password" placeholder="Enter Your Password"><br><br>
@@ -40,6 +40,33 @@
             </span>
 
                 <input type="submit" value="Login" id="submit">
+
+                <a href="#" id="forgetPassword">Forget Your Password?</a>
+                <script>
+                    document.getElementById("forgetPassword").addEventListener("click", function(event) {
+                        event.preventDefault(); //阻止默认跳转行为
+                        //获取输入框中的用户名
+                        var username = document.getElementById("username").value.trim();
+                        if (!username)
+                        {
+                            alert("Please enter your username before resetting your password.");
+                            return;
+                        }
+                        //显示确认框
+                        var confirmReset = confirm("Your username: " + username + "\nConfirm to reset your password?");
+                        if (confirmReset)
+                        {
+                            // 用户点击Yes跳转到Controller
+                            window.location.href = "/user/forgetPassword?userId=" + encodeURIComponent(username);
+                        }
+                    });
+                </script>
+                <script th:inline="javascript">
+                    var message = [[${resetMessage}]] + "";
+                    if (message && message !== "") {
+                        alert(message);
+                    }
+                </script>
 
                 <!-- 错误消息显示 -->
                 <p id="requestMessage" th:if="${signOnMsg != null}">

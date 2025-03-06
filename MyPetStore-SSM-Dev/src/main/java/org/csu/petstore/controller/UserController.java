@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.csu.petstore.entity.Account;
 import org.csu.petstore.entity.Journal;
+import org.csu.petstore.entity.ResetPassword;
 import org.csu.petstore.entity.Signon;
 import org.csu.petstore.service.UserService;
 import org.csu.petstore.vo.AccountVO;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -34,7 +36,10 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/viewSignon")
-    public String viewSignon() {
+    public String viewSignon(Model model)
+    {
+        String resetMessage = "";
+        model.addAttribute("resetMessage", resetMessage);
         return "account/signon";
     }
     
@@ -90,6 +95,39 @@ public class UserController {
             userService.insertAccount(accountVO);
             return "account/main";
         }
+    }
+
+    @GetMapping("/forgetPassword")
+    public String forgetPassword(@RequestParam("userId") String userId)
+    {
+        System.out.println(userId);
+        Signon signon = userService.getSignonByUsername(userId);
+        String resetMessage;
+        if(signon == null)
+        {
+            //用户不存在，返回注册页面并显示错误消息
+            System.out.println("111");
+            resetMessage = "User does not exist!";
+        }
+        else
+        {
+            System.out.println(signon.getUsername());
+            ResetPassword resetPassword = new ResetPassword();
+            resetPassword.setUserId(userId);
+            userService.addResetPassword(resetPassword);
+
+            //返回注册页面并显示成功消息
+            resetMessage = "You have submitted a password reset request. Please wait for the administrator's review.";
+        }
+        return "redirect:/user/returnResetResult?resetMessage=" + resetMessage;
+    }
+
+    @GetMapping("/returnResetResult")
+    public String showSignonPage(String resetMessage, Model model)
+    {
+        System.out.println("2222");
+        model.addAttribute("resetMessage", resetMessage);
+        return "account/signon";
     }
 
     @GetMapping("/viewEdit")

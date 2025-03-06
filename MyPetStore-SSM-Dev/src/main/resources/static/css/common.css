@@ -245,7 +245,15 @@
     padding-left: 10px;
 }
 
-#Catalog #signOnForm #formContent #needAnAccount a:hover
+#Catalog #signOnForm #formContent #forgetPassword
+{
+     text-decoration: none;
+     color: #5B9BD5;
+     margin-top: 10px;
+}
+
+#Catalog #signOnForm #formContent #needAnAccount a:hover,
+#Catalog #signOnForm #formContent #forgetPassword:hover
 {
     text-decoration: underline;
     cursor: pointer;
