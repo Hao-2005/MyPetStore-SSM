@@ -59,6 +59,42 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderVo> getUserDoingOrders(String userId) {
+        //init
+        List<OrderVo> orderVos = getUserOrders(userId);
+        List<OrderVo> result = new ArrayList<>();
+
+        //choose status = P
+        for(int i=0;i<orderVos.size();i++){
+            OrderVo orderVo = orderVos.get(i);
+            String status = orderVo.getStatus();
+            if(status.equals("P")){
+                result.add(orderVo);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<OrderVo> getUserDoneOrders(String userId) {
+        //init
+        List<OrderVo> orderVos = getUserOrders(userId);
+        List<OrderVo> result = new ArrayList<>();
+
+        //choose status = F
+        for(int i=0;i<orderVos.size();i++){
+            OrderVo orderVo = orderVos.get(i);
+            String status = orderVo.getStatus();
+            if(status.equals("F")){
+                result.add(orderVo);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<OrderVo> getUserCancelingOrders(String userId) {
         //init
         List<OrderVo> orderVos = getUserOrders(userId);

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ItemService {
     public List<ItemVo> getItemsByIds(List<String> ids);
+    public String getProductIdByItemId(String itemId);
 }

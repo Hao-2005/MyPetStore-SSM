@@ -35,4 +35,10 @@ public class ItemServiceImpl implements ItemService {
         }
         return itemVos;
     }
+
+    @Override
+    public String getProductIdByItemId(String itemId) {
+        Item item = itemMapper.selectById(itemId);
+        return item.getProductId();
+    }
 }

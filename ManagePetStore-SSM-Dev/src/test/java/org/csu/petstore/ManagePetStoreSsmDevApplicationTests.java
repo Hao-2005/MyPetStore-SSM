@@ -3,10 +3,7 @@ package org.csu.petstore;
 import org.csu.petstore.entity.Category;
 import org.csu.petstore.persistence.*;
 import org.csu.petstore.service.*;
-import org.csu.petstore.service.impl.AccountServiceImpl;
-import org.csu.petstore.service.impl.LineItemServiceImpl;
-import org.csu.petstore.service.impl.OrderServiceImpl;
-import org.csu.petstore.service.impl.ResetPasswordServiceImpl;
+import org.csu.petstore.service.impl.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,6 +34,9 @@ class ManagePetStoreSsmDevApplicationTests {
     @Autowired
     ResetPasswordServiceImpl resetPasswordService;
 
+    @Autowired
+    ProductServiceImpl productService;
+
     @Test
     void contextLoads() {
 //        List<String> list = new ArrayList<>();
@@ -49,6 +49,6 @@ class ManagePetStoreSsmDevApplicationTests {
 //        System.out.println(productJournalService.getThreeMostViewProducts("ACID"));
 
 //        System.out.println(orderService.getUserCancelingOrders("j2ee"));
-        System.out.println(resetPasswordService.resetDefaultPassword("j2ee"));
+        System.out.println(productService.getUserBoughtProduct("j2ee"));
     }
 }
