@@ -5,6 +5,16 @@ import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const chartConfig = {
+    itemId: {
+        label: "Item Id"
+    },
+    totalAmount: {
+        label: "Amount",
+    },
+    totalSales: {
+        label: "Sales",
+    },
+
 
 } satisfies ChartConfig
 
@@ -26,42 +36,40 @@ export default function Chart({ data, from, to }: { data: Array<any>, from: stri
                     right: 16,
                     }}
                 >
-                    <CartesianGrid horizontal={false} />
+                <CartesianGrid horizontal={false} />
                     <YAxis
                     dataKey="itemId"
                     type="category"
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
-                    hide
-                    />
-                    <XAxis dataKey="value" type="number" hide />
-                    <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="line" />}
-                    />
-                    <Bar
-                    dataKey="value"
-                    layout="vertical"
-                    className="fill-slate-800"
-                    radius={4}
-                                    
-                    >
-                    <LabelList
-                        dataKey="name"
-                        position="insideLeft"
-                        offset={8}
-                        className="fill-blue-500 font-bold"
-                        fontSize={15}
-                    />
-                    <LabelList
-                        dataKey="value"
-                        position="right"
-                        offset={8}
-                        className="fill-blue-500"
-                        fontSize={12}
-                    />
-                    </Bar>
+                    hide/>
+                    <XAxis dataKey="totalAmount" type="number" hide/>
+                    <ChartTooltip content={<ChartTooltipContent />}
+                />
+                        <Bar
+                        dataKey="totalAmount"
+                        layout="vertical"
+                        className="fill-slate-800"
+                        radius={4}              
+                        >
+                            <LabelList
+                                dataKey="productName"
+                                position="insideLeft"
+                                offset={8}
+                                className="fill-blue-500 font-bold"
+                                fontSize={15}
+                            />
+                            <LabelList
+                                dataKey="totalAmount"
+                                position="right"
+                                offset={8}
+                                className="fill-blue-500"
+                                fontSize={12}
+                            />       
+                        </Bar>
+                        <Bar dataKey="totalSales" layout="vertical"
+                            className="fill-rose-400" radius={ 8 }></Bar>
                     </BarChart>
                     </ChartContainer>
                 </CardContent>

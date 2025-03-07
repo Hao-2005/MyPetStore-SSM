@@ -1,17 +1,19 @@
 'use client'
-import { statistics } from "@/app/data"
+// import { statistics } from "@/app/data"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { format, set } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { useState } from "react";
 import Chart from "@/app/ui/chart";
 import { DatePicker } from "@/app/ui/datePicker";
+import { springBoot } from "@/app/config";
 
 
 type Sell = {
-    name: string,
     itemId: string,
-    value: number
+    productName: string,
+    totalAmount: string,
+    totalSales: string,
 }
 
 export default function Sells() {
@@ -20,10 +22,13 @@ export default function Sells() {
     const [toDate, setToDate] = useState<Date>();
     const [isSubmited, setIsSubmited] = useState(false);
     async function getSales() {
-        setSell(statistics.data);
-        if (Math.random() < 0.5) {
-            setSell([{name:"test", itemId:"test", value: 100}, ...statistics.data])
-        }
+        const url = `${springBoot}/sells/getSellSummaryBetweenDates?startDate=${format(fromDate!, "yyyy-MM-dd")}&endDate=${format(toDate!, "yyyy-MM-dd")}`;
+        console.log(url);
+        const res = await fetch(url);
+        const summary = await res.json();
+        console.log(summary);
+        setSell(summary);
+        
     }
     function handleSubmit() {
         alert("from " + fromDate + " to " + toDate)
@@ -33,7 +38,7 @@ export default function Sells() {
     
     return (
         <div className="flex gap-4 w-full h-sreen">
-            <Card className="bg-slate-500 w-[500px]">
+            <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-[500px]">
                 <CardHeader className="text-white font-bold text-xl">
                     choose date to view statistics
                 </CardHeader>
