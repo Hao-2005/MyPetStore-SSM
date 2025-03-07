@@ -1,7 +1,11 @@
 package org.csu.petstore.controller;
 
+import org.apache.catalina.User;
 import org.csu.petstore.entity.Product;
 import org.csu.petstore.service.CatalogService;
+import org.csu.petstore.service.UserService;
+import org.csu.petstore.service.impl.UserServiceImpl;
+import org.csu.petstore.vo.AccountVO;
 import org.csu.petstore.vo.CategoryVO;
 import org.csu.petstore.vo.ItemVO;
 import org.csu.petstore.vo.ProductVO;
@@ -9,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
@@ -21,6 +26,8 @@ public class CatalogController {
 
     @Autowired
     private CatalogService catalogService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/index")
     public String index()
@@ -43,8 +50,14 @@ public class CatalogController {
     }
 
     @GetMapping("/viewProduct")
-    public String viewProduct(String productId, Model model)
+    public String viewProduct(String productId, @ModelAttribute("loginAccount") AccountVO loginAccount, Model model)
     {
+        //记录商品浏览行为
+        if(loginAccount != null)
+            userService.addViewProduct(productId, loginAccount.getUsername());
+        else
+            userService.addViewProduct(productId, "");
+
         ProductVO product = catalogService.getProduct(productId);
         model.addAttribute("product", product);
         return "catalog/product";

@@ -1,9 +1,6 @@
 package org.csu.petstore.service;
 
-import org.csu.petstore.entity.Account;
-import org.csu.petstore.entity.Journal;
-import org.csu.petstore.entity.ResetPassword;
-import org.csu.petstore.entity.Signon;
+import org.csu.petstore.entity.*;
 import org.csu.petstore.vo.AccountVO;
 
 import java.util.List;
@@ -17,4 +14,5 @@ public interface UserService {
     public List<Journal> getAllJournals(String username);
     public void updateAccount(AccountVO accountVO);
     public void addResetPassword(ResetPassword resetPassword);
+    public void addViewProduct(String productId, String username);
 }

@@ -1,6 +1,7 @@
 package org.csu.petstore.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jakarta.annotation.PostConstruct;
 import org.csu.petstore.entity.*;
 import org.csu.petstore.persistence.*;
 import org.csu.petstore.service.UserService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,6 +27,10 @@ public class UserServiceImpl implements UserService {
     private JournalMapper journalMapper;
     @Autowired
     private ResetPasswordMapper resetPasswordMapper;
+    @Autowired
+    private ViewProductMapper viewProductMapper;
+    @Autowired
+    private ProductJournalMapper productJournalMapper;
 
     @Override
     public Account getAccountByUsernameAndPssword(String username, String password) {
@@ -96,5 +102,39 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addResetPassword(ResetPassword resetPassword) {
         resetPasswordMapper.insert(resetPassword);
+    }
+
+    @Override
+    public void addViewProduct(String productId, String username)
+    {
+        System.out.println(productId);
+        System.out.println(username);
+        //更新商品浏览总次数
+        ViewProduct viewProduct = viewProductMapper.selectById(productId);
+
+        if (viewProduct != null)
+        {
+            //如果商品存在，viewCount+1
+            int currentCount = viewProduct.getViewCount();
+            viewProduct.setViewCount(currentCount + 1);
+            viewProductMapper.updateById(viewProduct);
+        }
+        else
+        {
+            //如果不存在，插入新数据
+            viewProduct = new ViewProduct();
+            viewProduct.setProductId(productId);
+            viewProduct.setViewCount(1);  //第一次访问
+            viewProductMapper.insert(viewProduct);
+        }
+
+        //记录用户浏览行为
+        if(!Objects.equals(username, "") && username != null)
+        {
+            ProductJournal productJournal = new ProductJournal();
+            productJournal.setUserId(username);
+            productJournal.setProductId(productId);
+            productJournalMapper.insert(productJournal);
+        }
     }
 }
