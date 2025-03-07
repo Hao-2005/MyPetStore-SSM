@@ -6,11 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("resetpassword")
-public class ResetPassword
-{
-    @TableId(value = "userId")
-    private String userId;
-    @TableField(value = "status")
-    private int status;
+@TableName("sequence")
+public class Sequence {
+    @TableId(value = "name")
+    private String name;
+    @TableField(value = "nextid")
+    private int nextId;
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @TableName("signon")
 public class Signon {
-    @TableId(value = "username")
+    @TableId("username")
     private String username;
     private String password;
 }

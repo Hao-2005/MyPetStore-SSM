@@ -9,7 +9,7 @@ $(function (){
         console.log(itemId);
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8080/mypetstore/updateCartItem',
+            url: 'http://localhost:8090/user/updateCartItem',
             data: { itemId: itemId, quantity: quantity }, // 使用 data 对象传递参数
             success:function (data){
                 if(quantity == 0){

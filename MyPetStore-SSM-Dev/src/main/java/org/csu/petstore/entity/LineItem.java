@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 @TableName("lineitem")
 public class LineItem {
     @TableField(value = "orderid")
-    private String orderId;
+    private int orderId;
     @TableField(value = "linenum")
-    private int lineNum;
+    private int lineNumber;
     @TableField(value = "itemid")
     private String itemId;
     private int quantity;

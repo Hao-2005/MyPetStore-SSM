@@ -17,7 +17,7 @@
     <div id="Menu">
         <div id="Logo">
             <div id="LogoContent">
-                <a th:href="@{/index}"><img src="../images/logo-topbar.gif" alt="Logo"></a>
+                <a th:href="@{/catalog/index}"><img src="../images/logo-topbar.gif" alt="Logo"></a>
             </div>
         </div>
 
@@ -44,7 +44,7 @@
     <!-- 搜索框 -->
     <div id="Search">
         <div id="SearchContent">
-            <form th:action="@{/searchForm}" method="post">
+            <form th:action="@{/catalog/search}" method="post">
                 <input type="text" name="keyword" size="14" id="keyword"
                        placeholder="Enter Search Text" autocomplete="off">
                 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -61,7 +61,7 @@
     <!-- 快捷链接 -->
     <div id="QuickLinks">
         <p>
-            <a href="/catalog/cart">
+            <a href="/user/viewCart">
                 <img align="middle" name="img_cart" src="../images/cart.gif" alt="Cart" />
             </a>
             &nbsp;&nbsp;<span>|</span>&nbsp;&nbsp;
@@ -77,5 +77,4 @@
         </p>
     </div>
 </div>
-
 <div id="Content">
