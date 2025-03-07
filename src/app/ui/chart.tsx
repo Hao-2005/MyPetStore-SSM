@@ -1,4 +1,4 @@
-import { ChartContainer} from "@/components/ui/chart";
+import { ChartContainer, ChartLegend, ChartLegendContent} from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts";
 import { type ChartConfig } from "@/components/ui/chart";
 import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
@@ -10,9 +10,11 @@ const chartConfig = {
     },
     totalAmount: {
         label: "Amount",
+        color: "#d6d3d1"
     },
     totalSales: {
         label: "Sales",
+        color: "#fff"
     },
 
 
@@ -21,61 +23,58 @@ const chartConfig = {
 export default function Chart({ data, from, to }: { data: Array<any>, from: string, to: string }) {
     const sell = data;
     return (
-        <Card className="flex-1 max-h-screen overflow-auto">
+        <Card className="flex-1">
             <CardHeader>
                 <CardTitle>sells statistics</CardTitle>
-                        <CardDescription>from {from} to { to}</CardDescription>
+                <CardDescription>from {from} to { to}</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig}>
-                <BarChart
-                    accessibilityLayer
-                    data={sell}
-                    layout="vertical"
-                    margin={{
-                    right: 16,
-                    }}
-                >
-                <CartesianGrid horizontal={false} />
-                    <YAxis
-                    dataKey="itemId"
-                    type="category"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    hide/>
-                    <XAxis dataKey="totalAmount" type="number" hide/>
-                    <ChartTooltip content={<ChartTooltipContent />}
-                />
+                <ChartContainer config={chartConfig} className="max-h-[300px] voerflow-auto">
+                    <BarChart
+                        accessibilityLayer
+                        data={sell}
+                        layout="vertical">
+                        <CartesianGrid horizontal={false} />
+                        <YAxis
+                            dataKey="productName"
+                            type="category"
+                            tickLine={false}
+                            axisLine={false}
+                            tickFormatter={(value) => value.slice(0, 3)} />
+                        <XAxis dataKey="totalAmount" type="number" hide />
+                        <ChartTooltip content={<ChartTooltipContent nameKey="totalAmount" />} />
+                        <ChartLegend content={<ChartLegendContent />} />
                         <Bar
-                        dataKey="totalAmount"
-                        layout="vertical"
-                        className="fill-slate-800"
-                        radius={4}              
-                        >
-                            <LabelList
-                                dataKey="productName"
-                                position="insideLeft"
-                                offset={8}
-                                className="fill-blue-500 font-bold"
-                                fontSize={15}
-                            />
-                            <LabelList
-                                dataKey="totalAmount"
-                                position="right"
-                                offset={8}
-                                className="fill-blue-500"
-                                fontSize={12}
-                            />       
+                            dataKey="totalAmount"
+                            layout="vertical"
+                            fill="#fb923c"
+                            radius={4}>
                         </Bar>
-                        <Bar dataKey="totalSales" layout="vertical"
-                            className="fill-rose-400" radius={ 8 }></Bar>
+                            
                     </BarChart>
-                    </ChartContainer>
-                </CardContent>
-                {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-                    this is a footer
-                </CardFooter> */}
-            </Card>
+                </ChartContainer>
+                
+                <ChartContainer config={chartConfig} className="max-h-[300px] voerflow-auto">
+                    <BarChart
+                        accessibilityLayer
+                        data={sell}
+                        layout="vertical">
+                        <CartesianGrid horizontal={false} />
+                        <YAxis
+                            dataKey="productName"
+                            type="category"
+                            axisLine={false}
+                            tickLine={false}
+                            tickFormatter={(value) => value.slice(0, 3)} />
+                        <XAxis dataKey="totalSales" type="number" hide />
+                        <ChartTooltip content={<ChartTooltipContent nameKey="totalSales" />} />
+                        <ChartLegend content={<ChartLegendContent />} />
+                        <Bar dataKey="totalSales" layout="vertical"
+                            fill="#a3e635"
+                            radius={4}></Bar>
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     )
 }
