@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="h-screen w-screen flex flex-row">
       
-      <div className="flex flex-col w-128 bg-zinc-800 text-white p-6">
+      <div className="flex flex-col w-128 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%  text-white p-6">
         <div className="flex font-family-serif text-2xl italic font-bold
         justify-center">
           Manage the Petstore
