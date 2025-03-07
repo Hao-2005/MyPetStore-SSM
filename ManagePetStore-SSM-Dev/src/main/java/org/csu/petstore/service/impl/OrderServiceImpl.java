@@ -26,9 +26,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     LineItemService lineItemService;
 
-    @Autowired
-    OrderStatusService orderStatusService;
-
     @Override
     public List<OrderVo> getUserOrders(String userId) {
         //init
@@ -51,11 +48,49 @@ public class OrderServiceImpl implements OrderService {
                 orderStatus.setStatus("Error"); // 设置默认状态
             }
 
+            orderVo.setStatus(orderStatus.getStatus());
+
             //get order line items
             orderVo.setLineItems(lineItemService.getLineItemsById(order.getOrderId()));
 
             orderVos.add(orderVo);
         }
         return orderVos;
+    }
+
+    @Override
+    public List<OrderVo> getUserCancelingOrders(String userId) {
+        //init
+        List<OrderVo> orderVos = getUserOrders(userId);
+        List<OrderVo> result = new ArrayList<>();
+
+        //choose status = W
+        for(int i=0;i<orderVos.size();i++){
+            OrderVo orderVo = orderVos.get(i);
+            String status = orderVo.getStatus();
+            if(status.equals("W")){
+                result.add(orderVo);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<OrderVo> getUserCanceledOrders(String userId) {
+        //init
+        List<OrderVo> orderVos = getUserOrders(userId);
+        List<OrderVo> result = new ArrayList<>();
+
+        //choose status = N
+        for(int i=0;i<orderVos.size();i++){
+            OrderVo orderVo = orderVos.get(i);
+            String status = orderVo.getStatus();
+            if(status.equals("N")){
+                result.add(orderVo);
+            }
+        }
+
+        return result;
     }
 }
