@@ -7,6 +7,7 @@ import { useState } from "react";
 import Chart from "@/app/ui/chart";
 import { DatePicker } from "@/app/ui/datePicker";
 import { springBoot } from "@/app/config";
+import { toast } from "sonner";
 
 
 type Sell = {
@@ -31,7 +32,15 @@ export default function Sells() {
         
     }
     function handleSubmit() {
-        alert("from " + fromDate + " to " + toDate)
+        toast("you submitted!", {
+            description: "from " + fromDate + " to " + toDate,
+            action: {
+                label: "undo",
+                onClick: () => {
+                    console.log("undo");
+                }
+            }
+        })
         setIsSubmited(true);
         getSales();
     }
