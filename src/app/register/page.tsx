@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -62,7 +63,7 @@ export default function RegisterForm() {
     return (
     <div className="w-full bg-rose-400 h-screen flex flex-col
         justify-center items-center shadow-lg bg-linear-to-r/shorter from-indigo-500 to-teal-400 to-indigo-500">
-        <h1 className="text-white text-3xl mb-5 font-bold italic">Register</h1>
+        <h1 className="text-white text-3xl mb-5 font-bold italic" style={{fontFamily: "Big Shoulders Inline"}}>Register</h1>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-8 bg-white w-1/4 p-4 rounded-lg">
@@ -115,6 +116,8 @@ export default function RegisterForm() {
                     )}
                 />
                 <Button type="submit">Submit</Button>
+                <br />
+                <Link href="/" className="text-blue-500 underline">Have Account, Login Now</Link>    
             </form>
         </Form>         
     </div>
