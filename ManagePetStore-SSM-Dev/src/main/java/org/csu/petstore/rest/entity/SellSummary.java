@@ -5,6 +5,7 @@ public class SellSummary {
     private String productName;
     private int totalAmount;
     private double totalSales;
+    private String month;
 
     public String getItemId() {
         return itemId;
@@ -37,4 +38,8 @@ public class SellSummary {
     public void setTotalSales(double totalSales) {
         this.totalSales = totalSales;
     }
+
+    public String getMonth() {return month;}
+
+    public void setMonth(String month) {this.month = month;}
 }
