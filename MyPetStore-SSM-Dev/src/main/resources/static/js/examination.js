@@ -82,9 +82,9 @@ $(function (){
         }else{
             $.ajax({
                 type    :'GET',
-                url     :'http://localhost:8080/mypetstore/examination?username='+username,
+                url     :'http://localhost:8090/user/examination?username='+username,
                 success :function (data){
-                    //console.log(data);
+                    console.log(data);
                     if(data === "true"){
                         usernameFeedback.text('用户名已存在');
                     }else{

@@ -11,7 +11,7 @@ public class UserAddress {
     @TableId(value = "userid")
     private String username;
     @TableField(value = "addrid")
-    private String addrId;
+    private String addressId;
     @TableField(value = "firstname")
     private String firstName;
     @TableField(value = "lastname")

@@ -8,7 +8,7 @@
     <header th:replace="common/top"></header>
 
     <div id="Catalog">
-        <form th:action="@{/order/confirmOrder}" method="post" id="orderForm">
+        <form th:action="@{/order/newOrder}" method="post" id="orderForm">
             <input type="hidden" name="shipAddressSubmitted" value="true">
 
             <table>

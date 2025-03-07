@@ -31,13 +31,13 @@ $(function (){
     $('#info').on('click','.productAutoItem',function(){
         const productId = $(this).data('productid');
         console.log(productId);
-        window.location.href="http://localhost:8080/mypetstore/productForm?productId="+productId;
+        window.location.href="http://localhost:8090/catalog/viewProduct?productId="+productId;
         $('#productAutoComplete').hide();
     });
     $('#info').on('click','.itemAutoItem',function(){
         const itemId = $(this).data('itemid');
         console.log(itemId);
-        window.location.href="http://localhost:8080/mypetstore/itemForm?itemId="+itemId;
+        window.location.href="http://localhost:8090/catalog/viewItem?itemId="+itemId;
         $('#productAutoComplete').hide();
     });
 
@@ -92,9 +92,10 @@ $(function (){
         }
         $.ajax({
             type:    'GET',
-            url:     'http://localhost:8080/mypetstore/getDetails?categoryId='+categoryId,
+            url:     'http://localhost:8090/catalog/getDetails?categoryId='+categoryId,
             success :function (data){
                 if(data !== null){
+                    console.log(data);
                     let parentContainer = $('#MainImage');  //父容器的选择器
 
                     //获取父容器相对于页面的偏移量
@@ -115,15 +116,15 @@ $(function (){
                     let infoHTML='';
                     for(let i=0;i<data.length;i++){
                         infoHTML += '<li class="Auto"><span class=\"productAutoItem\" data-productId="'
-                            +data[i].product.productId
+                            +data[i].productId
                             +'">'
-                            +data[i].product.productId
+                            +data[i].productId
                             +'</span>'
                             +' | '
                             +'<span class=\"itemAutoItem\" data-itemId="'
                             +data[i].itemId
                             +'">'
-                            +data[i].product.name+'</span></li>';
+                            +data[i].attribute1+'</span></li>';
                     }
                     info.html(infoHTML);
 
@@ -144,14 +145,14 @@ $(function (){
         const productId = $(this).data('productid');
         $('#productAutoComplete').hide();
         $('#keyword').val('');
-        window.location.href="http://localhost:8080/mypetstore/productForm?productId="+productId;
+        window.location.href="http://localhost:8090/catalog/viewProduct?productId="+productId;
     });
     $(document).on('click','.itemAutoItem',function()
     {
         const productId = $(this).data('itemid');
         $('#productAutoComplete').hide();
         $('#keyword').val('');
-        window.location.href="http://localhost:8080/mypetstore/itemForm?itemId="+productId;
+        window.location.href="http://localhost:8090/catalog/viewItem?itemId="+productId;
     });
 
     // 淡入文字的函数

@@ -8,7 +8,7 @@ $(function (){
         if(id==='choose'){
             $.ajax({
                 type: 'GET',
-                url: 'http://localhost:8080/mypetstore/changeAddress?addressId='+addressId+'&isDelete='+id,
+                url: 'http://localhost:8090/order/chooseAddress?addressId='+addressId,
                 success: function(data){
 
                         $('#firstname').val(data.firstName);
@@ -25,7 +25,7 @@ $(function (){
         }else if(id==='delete') {
             $.ajax({
                 type: 'GET',
-                url: 'http://localhost:8080/mypetstore/changeAddress?addressId=' + addressId + '&isDelete=' + id,
+                url: 'http://localhost:8090/order/deleteAddress?addressId=' + addressId,
                 success: function (data) {
                     if (data == 'delete success') {
                         alert('delete success');
@@ -36,7 +36,7 @@ $(function (){
         }else if(id==='setMain'){
             $.ajax({
                 type: 'GET',
-                url: 'http://localhost:8080/mypetstore/changeAddress?addressId=' + addressId + '&isDelete=' + id,
+                url: 'http://localhost:8090/order/setAddress?addressId=' + addressId,
                 success: function (data) {
                     console.log(data);
                     if (data == 'set main success') {

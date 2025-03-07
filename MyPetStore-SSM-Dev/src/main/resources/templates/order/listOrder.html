@@ -5,35 +5,35 @@
     <title>Title</title>
 </head>
 <body>
-    <header th:replace="common/top"></header>
+<header th:replace="common/top"></header>
 
-    <div id="BackLink">
-        <a th:href="@{/catalog/returnMain}">Return to Main Menu</a>
-    </div>
-    <script src="../js/adjustTopPosition.js"></script>
+<div id="BackLink">
+    <a th:href="@{/catalog/returnMain}">Return to Main Menu</a>
+</div>
+<script src="../js/adjustTopPosition.js"></script>
 
-    <div id="Catalog">
-        <h2>My Orders</h2>
-        <table class="show">
-            <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Total Price</th>
-            </tr>
+<div id="Catalog">
+    <h2>My Orders</h2>
+    <table class="show">
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total Price</th>
+        </tr>
 
-            <tr th:each="order : ${orderList}">
-                <td>
-                    <a th:href="@{/order/viewOrder(orderId=${order.orderId})}" th:text="${order.orderId}"></a>
-                </td>
-                <td th:text="${#dates.format(order.orderDate, 'yyyy/MM/dd HH:mm:ss')}"></td>
-                <td th:text="'$' + ${#numbers.formatDecimal(order.totalPrice, 1, 2)}"></td>
-            </tr>
-        </table>
+        <tr th:each="order : ${orderList}">
+            <td>
+                <a th:href="@{/order/viewOrder(orderId=${order.orderId})}" th:text="${order.orderId}"></a>
+            </td>
+            <td th:text="${#dates.format(order.orderDate, 'yyyy/MM/dd HH:mm:ss')}"></td>
+            <td th:text="'$' + ${#numbers.formatDecimal(order.totalPrice, 1, 2)}"></td>
+        </tr>
+    </table>
 
-        <div id="Separator">&nbsp;</div>
-    </div>
+    <div id="Separator">&nbsp;</div>
+</div>
 
 
-    <footer th:replace="common/bottom"></footer>
+<footer th:replace="common/bottom"></footer>
 </body>
 </html>

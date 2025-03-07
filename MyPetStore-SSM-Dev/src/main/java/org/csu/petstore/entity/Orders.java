@@ -54,7 +54,7 @@ public class Orders {
     private String shipToLastName;
     @TableField(value = "creditcard")
     private String creditCard;
-    @TableField(value = "expirydate")
+    @TableField(value = "exprdate")
     private String expiryDate;
     @TableField(value = "cardtype")
     private String cardType;

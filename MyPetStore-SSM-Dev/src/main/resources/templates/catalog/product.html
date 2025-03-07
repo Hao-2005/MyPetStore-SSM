@@ -40,7 +40,7 @@
             </td>
             <td th:text="'$'+${#numbers.formatDecimal(item.listPrice,1,2)}"></td>
             <td>
-                <a th:href="'/cart/addItemToCart?workingItemId='+${item.itemId}" class="Button">Add to Cart</a>
+                <a th:href="'/user/addItemToCart?workingItemId='+${item.itemId}" class="Button">Add to Cart</a>
             </td>
         </tr>
 
