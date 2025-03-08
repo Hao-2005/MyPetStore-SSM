@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
 
 const links = [
-    { name: "Commodity", href: "/dashboard", icon: <Icon path={mdiDog} size={2} /> },
+    { name: "Commodity", href: "/dashboard/commodity", icon: <Icon path={mdiDog} size={2} /> },
     { name: "Customers", href: "/dashboard/customer", icon: <Icon path={mdiAccountSupervisor} size={2} /> },
     { name: "Orders", href: "/dashboard/orders", icon: <Icon path={mdiOrderBoolDescendingVariant} size={2} /> },
     { name: "Cancellations", href: "/dashboard/cancellations", icon: <Icon path={mdiCreditCardRefundOutline} size={2} /> },

@@ -1,5 +1,5 @@
-export default function Commodity() {
+export default function Dashboard() {
     return (
-        <div>Commodity</div>
+        <></>
     )
 }
