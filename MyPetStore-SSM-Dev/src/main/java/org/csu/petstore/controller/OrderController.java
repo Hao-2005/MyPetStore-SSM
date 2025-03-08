@@ -1,5 +1,7 @@
 package org.csu.petstore.controller;
 
+import jakarta.servlet.ServletContext;
+import org.csu.petstore.entity.OrderStatus;
 import org.csu.petstore.entity.UserAddress;
 import org.csu.petstore.service.OrderService;
 import org.csu.petstore.service.UserService;
@@ -10,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +32,8 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ServletContext servletContext;
 
     @RequestMapping("/listOrder")
     public String listOrders(Model model) {
@@ -214,4 +221,49 @@ public class OrderController {
         return userAddress;
     }
 
+    @GetMapping("/returnOrder")
+    public String returnOrder(String orderId, Model model)
+    {
+        model.addAttribute("orderId", orderId);
+        return "order/returnOrder";
+    }
+
+    @PostMapping("/sendReturnRequest")
+    public String sendReturnRequest(String orderId, String reason, String description, MultipartFile image, Model model)
+    {
+        String imagePath = null;
+        if (!image.isEmpty()) {
+            try {
+                String uploadDir = System.getProperty("user.dir") + "/../Images/";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs(); // 创建目录
+                }
+
+                String fileName = orderId + ".jpg";
+                File destFile = new File(uploadDir, fileName);
+                image.transferTo(destFile);
+
+                //存储图片路径
+                imagePath = "/../images/" + fileName;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                model.addAttribute("msg", "Image upload failed!");
+                return "order/listOrder"; // 返回订单页面
+            }
+        }
+
+        orderService.insertReturnOrder(orderId, reason, description, imagePath);
+
+        orderService.updateStatus(orderId);
+        String msg = "The return request has been sent and is waiting to be reviewed by the merchant.";
+        model.addAttribute("msg", msg);
+
+        AccountVO loginAccount =(AccountVO) model.asMap().get("loginAccount");
+        List<OrderVO> orderVOList = orderService.getOrdersByUsername(loginAccount.getUsername());
+        model.addAttribute("orderList", orderVOList);
+
+        return "order/listOrder";
+    }
 }

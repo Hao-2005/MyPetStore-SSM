@@ -1,14 +1,8 @@
 package org.csu.petstore.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.csu.petstore.entity.LineItem;
-import org.csu.petstore.entity.OrderStatus;
-import org.csu.petstore.entity.Orders;
-import org.csu.petstore.entity.Sequence;
-import org.csu.petstore.persistence.LineItemMapper;
-import org.csu.petstore.persistence.OrderStatusMapper;
-import org.csu.petstore.persistence.OrdersMapper;
-import org.csu.petstore.persistence.SequenceMapper;
+import org.csu.petstore.entity.*;
+import org.csu.petstore.persistence.*;
 import org.csu.petstore.service.CatalogService;
 import org.csu.petstore.service.OrderService;
 import org.csu.petstore.vo.ItemVO;
@@ -16,6 +10,7 @@ import org.csu.petstore.vo.LineItemVO;
 import org.csu.petstore.vo.OrderVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +27,8 @@ public class OrderServiceImpl implements OrderService {
     private LineItemMapper lineItemMapper;
     @Autowired
     private CatalogService catalogService;
+    @Autowired
+    private ReturnOrdersMapper returnOrdersMapper;
 
 
     @Override
@@ -99,4 +96,24 @@ public class OrderServiceImpl implements OrderService {
         System.out.println("insert order");
     }
 
+    @Override
+    public void updateStatus(String orderId)
+    {
+        OrderStatus orderStatus = orderStatusMapper.selectById(orderId);
+        orderStatus.setStatus("W");
+        orderStatusMapper.updateById(orderStatus);
+    }
+
+    @Override
+    public void insertReturnOrder(String orderId, String reason, String description, String image)
+    {
+        ReturnOrders returnOrder = new ReturnOrders();
+        returnOrder.setOrderId(orderId);
+        returnOrder.setReason(reason);
+        returnOrder.setDescn(description);
+        returnOrder.setImage(image);
+        returnOrder.setStatus("W");
+
+        returnOrdersMapper.insert(returnOrder);
+    }
 }

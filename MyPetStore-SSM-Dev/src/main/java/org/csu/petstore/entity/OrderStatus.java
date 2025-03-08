@@ -18,5 +18,4 @@ public class OrderStatus {
     private Date timeStamp;
     @TableField(value = "status")
     private String status;
-
 }

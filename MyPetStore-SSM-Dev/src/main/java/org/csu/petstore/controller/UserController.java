@@ -3,11 +3,7 @@ package org.csu.petstore.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.csu.petstore.entity.Account;
-import org.csu.petstore.entity.Cart;
-import org.csu.petstore.entity.Journal;
-import org.csu.petstore.entity.ResetPassword;
-import org.csu.petstore.entity.Signon;
+import org.csu.petstore.entity.*;
 import org.csu.petstore.service.CatalogService;
 import org.csu.petstore.service.UserService;
 import org.csu.petstore.vo.AccountVO;
@@ -33,7 +29,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/user")
-@SessionAttributes(value = {"loginAccount","captcha","cart","isAdd","languages","categories"})
+@SessionAttributes(value = {"loginAccount","captcha","cart","isAdd","languages","categories","myList"})
 public class UserController {
 
     private String msg;
@@ -209,6 +205,10 @@ public class UserController {
         }else{
             CartVO cartVO = userService.getCart(loginAccount.getUsername());
             model.addAttribute("cart", cartVO);
+            List<Product> productList = catalogService.getProductListByCategory(loginAccount.getFavouriteCategoryId());
+            model.addAttribute("myList", productList);
+            System.out.println(loginAccount.isListOption());
+            System.out.println(productList);
             return "cart/cart";
         }
     }

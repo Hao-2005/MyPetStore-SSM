@@ -27,7 +27,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/catalog")
-@SessionAttributes(value = {"productList","isAdd","allCategories","languages","categories"})
+@SessionAttributes(value = {"productList","isAdd","allCategories","languages","categories","myList"})
 public class CatalogController {
 
     @Autowired
@@ -54,6 +54,8 @@ public class CatalogController {
         if(loginAccount != null){
             userService.updateCategoryJournal(loginAccount,categoryId);
             userService.updateProfileFavcategory(categoryId,loginAccount);
+            List<Product> productList = catalogService.getProductListByCategory(loginAccount.getFavouriteCategoryId());
+            model.addAttribute("myList", productList);
         }
         return "catalog/category";
     }

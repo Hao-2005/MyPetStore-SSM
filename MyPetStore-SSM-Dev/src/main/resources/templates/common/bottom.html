@@ -7,7 +7,7 @@
 
     <div id="Banner">
         <span th:if="${session.loginAccount != null and session.loginAccount.bannerOption}"
-              th:text="${session.loginAccount.bannerName}">
+              th:utext="${session.loginAccount.bannerName}">
         </span>
     </div>
 </div>

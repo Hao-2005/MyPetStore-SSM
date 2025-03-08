@@ -5,7 +5,6 @@
     <title>Title</title>
 </head>
 <body>
-<header th:replace="common/top"></header>
 
 <th:block th:if="${session.myList != null and not #lists.isEmpty(session.myList)}">
     <h2>Pet Favorites</h2>
@@ -20,6 +19,5 @@
     </ul>
 </th:block>
 
-<footer th:replace="common/bottom"></footer>
 </body>
 </html>

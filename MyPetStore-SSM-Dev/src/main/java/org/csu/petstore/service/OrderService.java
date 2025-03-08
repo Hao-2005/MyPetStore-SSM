@@ -3,6 +3,7 @@ package org.csu.petstore.service;
 import org.csu.petstore.entity.Sequence;
 import org.csu.petstore.vo.OrderVO;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,4 +19,7 @@ public interface OrderService {
 
     void insertOrder(OrderVO order);
 
+    void updateStatus(String orderId);
+
+    void insertReturnOrder(String orderId, String reason, String description, String image);
 }
