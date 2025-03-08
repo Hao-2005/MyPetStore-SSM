@@ -52,7 +52,7 @@ export default function Cancellations() {
 
 
     return (
-        <Table isStriped>
+        <Table isStriped isHeaderSticky>
                 <TableHeader>
                     <TableColumn>Order ID</TableColumn>
                     <TableColumn>Order Date</TableColumn>
