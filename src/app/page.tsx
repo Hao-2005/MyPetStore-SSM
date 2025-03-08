@@ -4,14 +4,22 @@ import Image from "next/image";
 import { FormEvent } from "react";
 import { springBoot } from "./config";
 import Link from "next/link";
-
+import {Big_Shoulders_Inline_Display, Playfair_Display} from "next/font/google"
+const bigShouldersInlineDisplay = Big_Shoulders_Inline_Display({
+  weight: '400',
+  subsets: ['latin'],
+})
+const playfairDisplay = Playfair_Display({
+  weight: '400',
+  subsets: ['latin'],
+})
 export default function Home() {
   return (
     <div className="h-screen w-screen flex flex-row">
       
       <div className="flex flex-col w-128 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%  text-white p-6">
-        <div className="flex font-family-serif text-2xl italic font-bold
-        justify-center" style ={{fontFamily:"Big Shoulders Inline"}}>
+        <div className={`flex font-family-serif text-2xl italic font-bold
+        justify-center ${bigShouldersInlineDisplay.className}`}>
           Login to Manage the Petstore
         </div>
         <div className="flex-1 text-black w-1/2
@@ -44,9 +52,9 @@ export default function Home() {
         </div>
       </div>
       
-      <div className="flex-1 bg-rose-300 text-white
+      <div className={`flex-1 bg-rose-300 text-white
       bg-[url(/images/parrot-hero.jpg)] bg-cover bg-center
-      flex flex-col justify-center items-center" style={{fontFamily: "Playfair Display"}}>
+      flex flex-col justify-center items-center ${playfairDisplay.className}`}>
         <p className="font-bold text-4xl w-1/2 bg-black/50 p-5
           ">"Paws, Claws, and Efficiency:
           <span className="underline italic"> Streamline </span>

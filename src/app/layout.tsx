@@ -25,9 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <style>
+        {/* <style>
         @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Inline:opsz,wght@10..72,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-        </style>
+        </style> */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
