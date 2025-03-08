@@ -10,7 +10,6 @@ import {
 import Link from 'next/link';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
-import { Toaster } from "@/components/ui/sonner"
 
 const links = [
     { name: "Commodity", href: "/dashboard", icon: <Icon path={mdiDog} size={2} /> },
@@ -44,7 +43,6 @@ export default function RootLayout({
           <div className="flex-1 bg-slate-100 rounded-4xl p-6 text-black">
             {children}  
           </div>
-          <Toaster/>
       </div>
   );
 }
