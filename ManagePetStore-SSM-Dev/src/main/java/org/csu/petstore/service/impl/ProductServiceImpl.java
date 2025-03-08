@@ -1,7 +1,10 @@
 package org.csu.petstore.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import org.csu.petstore.entity.Category;
 import org.csu.petstore.entity.LineItem;
 import org.csu.petstore.entity.Product;
+import org.csu.petstore.persistence.CategoryMapper;
 import org.csu.petstore.persistence.ProductMapper;
 import org.csu.petstore.service.ItemService;
 import org.csu.petstore.service.OrderService;
@@ -23,6 +26,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     OrderService orderService;
+
+    @Autowired
+    CategoryMapper categoryMapper;
 
     //获得订单所有的line item
     private List<LineItem> getAllLineItemsInOrders(String userId){
@@ -119,5 +125,21 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return result;
+    }
+
+    @Override
+    public void updateProductImage(String productId, String image) {
+        String des = "<image src=\"" + image + "\"><span id=\"itemDescription\">Fresh Water fish from Japan</span>";
+        UpdateWrapper<Product> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("productId", productId).set("descn", des);
+        productMapper.update(updateWrapper);
+    }
+
+    @Override
+    public void updateCategoryImage(String categoryId, String image) {
+        String des = "<image src=\"" + image + "\"><font size=\"5\" color=\"blue\"> Birds</font>";
+        UpdateWrapper<Category> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("catid", categoryId).set("descn", des);
+        categoryMapper.update(updateWrapper);
     }
 }

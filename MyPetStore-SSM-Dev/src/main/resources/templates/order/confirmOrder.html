@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script type="text/javascript">
+        // 页面加载完成后启动定时器
+        window.onload = function() {
+            // 设置定时器，10 分钟后跳转（10 分钟 = 10 * 60 * 1000 毫秒）
+            setTimeout(function() {
+                // 跳转到目标页面
+                window.location.href = "./user/viewCart"; // 替换为目标页面的 URL
+            }, 10 * 60 * 1000); // 10 分钟
+        };
+    </script>
 </head>
 <body>
 <header th:replace="common/top"></header>

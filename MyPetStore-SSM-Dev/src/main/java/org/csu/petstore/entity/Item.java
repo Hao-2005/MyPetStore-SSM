@@ -2,11 +2,13 @@ package org.csu.petstore.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@TableName("item")
 public class Item {
     @TableId(value = "itemid")
     private String itemId;
@@ -29,4 +31,5 @@ public class Item {
     private String attribute4;
     @TableField(value = "attr5")
     private String attribute5;
+    private int modifying;
 }

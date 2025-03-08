@@ -30,4 +30,6 @@ public interface CatalogService{
     List<Item> getItemListByProduct(String productId);
 
     List<ItemVO> getItemVOListByProduct(String productId);
+
+    boolean checkItemQuantity(String itemId,int quantity);
 }

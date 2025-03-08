@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script th:inline="javascript">
+        // 获取后端传递的消息
+        var message = [[${viewNewOrderMsg}]];
+
+        // 判断消息是否存在
+        if (message) {
+            alert(message); // 弹出消息
+        }
+    </script>
 </head>
 <body>
 <header th:replace="common/top"></header>
@@ -97,6 +106,16 @@
 
     <div id="Separator">&nbsp;</div>
 </div>
+
+<!--以弹窗形式显示退货申请处理结果-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var viewNewOrderMsg = /*[[${msg}]]*/ '';
+    if (viewNewOrderMsg !== null && viewNewOrderMsg !== '') {
+        alert(viewNewOrderMsg);
+    }
+    /*]]>*/
+</script>
 
 <script src="../js/updateCart.js"></script>
 <footer th:replace="common/bottom"></footer>

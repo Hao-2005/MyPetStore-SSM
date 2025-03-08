@@ -156,4 +156,11 @@ public class CatalogServiceImpl implements CatalogService
         }
         return itemVOList;
     }
+
+    @Override
+    public boolean checkItemQuantity(String itemId,int quantity) {
+        int itemQuantity = inventoryMapper.selectById(itemId).getQuantity();
+        System.out.println(itemQuantity+"    "+quantity);
+        return quantity <= itemQuantity;
+    }
 }

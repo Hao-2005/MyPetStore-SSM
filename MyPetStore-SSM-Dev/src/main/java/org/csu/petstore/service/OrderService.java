@@ -1,6 +1,7 @@
 package org.csu.petstore.service;
 
 import org.csu.petstore.entity.Sequence;
+import org.csu.petstore.vo.CartVO;
 import org.csu.petstore.vo.OrderVO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,4 +23,9 @@ public interface OrderService {
     void updateStatus(String orderId);
 
     void insertReturnOrder(String orderId, String reason, String description, String image);
+
+    void decreaseItemQuantity(OrderVO order);
+    String checkItemQuantity(CartVO cart);
+
+    String checkModifying(CartVO cart);
 }

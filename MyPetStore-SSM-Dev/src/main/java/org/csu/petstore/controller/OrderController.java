@@ -57,17 +57,26 @@ public class OrderController {
 
     }
 
-
-
     @RequestMapping("/viewNewOrder")
     public String viewNewOrder(@ModelAttribute("loginAccount") AccountVO loginAccount,
-                           @ModelAttribute("cart") CartVO cart,
-                           Model model) {
+                               @ModelAttribute("cart") CartVO cart,
+                               Model model) {
         if(loginAccount == null) {
             return "/account/login";
         }else{
             OrderVO orderVO = new OrderVO();
-            orderVO.initOrder(loginAccount, cart);
+            String isModifying = orderService.checkModifying(cart);
+            if(isModifying != null){
+                model.addAttribute("viewNewOrderMsg",isModifying+" information is being modified, order cannot be placed！");
+                return "cart/cart";
+            }
+            String isQuantity = orderService.checkItemQuantity(cart);
+            if(isQuantity != null){
+                model.addAttribute("viewNewOrderMsg",isQuantity+" not enough stock to place an order！");
+                return "cart/cart";
+            }
+            CartVO cartVO = userService.getCart(loginAccount.getUsername());
+            orderVO.initOrder(loginAccount, cartVO);
             model.addAttribute("order", orderVO);
             List<UserAddress> userAddressList = userService.getUserOKAddressByUsername(loginAccount.getUsername());
             model.addAttribute("addresses", userAddressList);
@@ -142,7 +151,9 @@ public class OrderController {
             model.addAttribute("confirmed", confirmed);
             Date date = new Date();
             order.setOrderDate(date);
+            System.out.println(date);
             order.setOrderId(orderService.getNextOrderId());
+            orderService.decreaseItemQuantity(order);
             orderService.insertOrder(order);
             model.addAttribute("cart", null);
             userService.deleteCart(loginAccount.getUsername());
@@ -150,8 +161,8 @@ public class OrderController {
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             String currentDate = formatter.format(date);
             String addOrderString = "User "+ loginAccount.getUsername() + " added a new order "
-                    + "<a href=\"viewOrder?orderId=" + order.getOrderId() + "\">"
-                    + order.getOrderId() + "</a>.";
+                    + "<a href= \"viewOrder?orderId=" + order.getOrderId() + "\">"
+                    + order.getOrderId() + "</a >.";
             userService.updateJournal(loginAccount.getUsername(), addOrderString, currentDate, "#ED7D31");
 
             return "order/viewOrder";

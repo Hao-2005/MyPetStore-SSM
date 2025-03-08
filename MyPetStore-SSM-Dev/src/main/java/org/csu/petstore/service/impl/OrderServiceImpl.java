@@ -1,13 +1,12 @@
 package org.csu.petstore.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.csu.petstore.entity.*;
 import org.csu.petstore.persistence.*;
 import org.csu.petstore.service.CatalogService;
 import org.csu.petstore.service.OrderService;
-import org.csu.petstore.vo.ItemVO;
-import org.csu.petstore.vo.LineItemVO;
-import org.csu.petstore.vo.OrderVO;
+import org.csu.petstore.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +28,12 @@ public class OrderServiceImpl implements OrderService {
     private CatalogService catalogService;
     @Autowired
     private ReturnOrdersMapper returnOrdersMapper;
+    @Autowired
+    private InventoryMapper inventoryMapper;
+    @Autowired
+    private ProductMapper productMapper;
+    @Autowired
+    private ItemMapper itemMapper;
 
 
     @Override
@@ -46,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
         Sequence sequence = getSequence("ordernum");
         Sequence nextSequence = getSequence("ordernum");
         nextSequence.setNextId(nextSequence.getNextId() + 1);
-        sequenceMapper.updateById(sequence);
+        sequenceMapper.updateById(nextSequence);
         return nextSequence.getNextId();
     }
 
@@ -90,6 +95,7 @@ public class OrderServiceImpl implements OrderService {
         orderStatusMapper.insert(order.getOrderStatus());
         for (LineItemVO lineItemVO : order.getLineItems()) {
             System.out.println("insert line item");
+            lineItemVO.setOrderId(order.getOrders().getOrderId());
             lineItemMapper.insert(lineItemVO.getLineItem());
             System.out.println(lineItemVO.getLineItem());
         }
@@ -115,5 +121,42 @@ public class OrderServiceImpl implements OrderService {
         returnOrder.setStatus("W");
 
         returnOrdersMapper.insert(returnOrder);
+    }
+
+    @Override
+    public void decreaseItemQuantity(OrderVO order) {
+        List<LineItemVO> lineItemList = order.getLineItems();
+        for (LineItemVO lineItemVO : lineItemList) {
+            UpdateWrapper<Inventory> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("itemid", lineItemVO.getItemId());
+            updateWrapper.setSql("qty = qty - " + lineItemVO.getQuantity());
+            inventoryMapper.update(null, updateWrapper);
+        }
+
+    }
+
+    @Override
+    public String checkItemQuantity(CartVO cart) {
+        List<CartItemVO> cartItemList = cart.getItemList();
+        for (CartItemVO cartItemVO : cartItemList) {
+            int quantity = inventoryMapper.selectById(cartItemVO.getItem().getItemId()).getQuantity();
+            if (quantity < cartItemVO.getQuantity())
+                return cartItemVO.getItem().getItemId();
+        }
+        return null;
+    }
+
+    @Override
+    public String checkModifying(CartVO cart) {
+        List<CartItemVO> cartItemList = cart.getItemList();
+        for (CartItemVO cartItemVO : cartItemList) {
+            int productModifying = productMapper.selectById(cartItemVO.getItem().getProductId()).getModifying();
+            int itemModifying = itemMapper.selectById(cartItemVO.getItem().getItemId()).getModifying();
+            if(productModifying == 1)
+                return cartItemVO.getItem().getProductId();
+            if(itemModifying == 1)
+                return cartItemVO.getItem().getItemId();
+        }
+        return null;
     }
 }

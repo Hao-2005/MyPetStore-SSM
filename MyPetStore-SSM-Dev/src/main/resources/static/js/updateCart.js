@@ -1,5 +1,6 @@
 $(function (){
     $('input[type="text"]').on('blur', function() {
+        let $input = $(this);
         let quantity = $(this).val();
         let itemId = $(this).attr('data-itemId'); // 使用 .attr() 方法获取属性值
         let $row = $(this).closest('tr');
@@ -12,14 +13,20 @@ $(function (){
             url: 'http://localhost:8090/user/updateCartItem',
             data: { itemId: itemId, quantity: quantity }, // 使用 data 对象传递参数
             success:function (data){
-                if(quantity == 0){
-                    $row.remove();
-                    alert('delete success');
+                if(data['isOk'] == null){
+                    if(quantity == 0){
+                        $row.remove();
+                        alert('delete success');
+                    }else{
+                        $totalDiv.text(data['cartItemTotal']);
+                        alert('update success')
+                    }
+                    $('#subTotal').text('Sub Total:'+data['subTotal']);
                 }else{
-                    $totalDiv.text(data['cartItemTotal']);
-                    alert('update success')
+                    console.log(data['isOk']);
+                    $input.val(data['isOk']);
+                    alert('Not enough stock')
                 }
-                $('#subTotal').text('Sub Total:'+data['subTotal']);
             }
         });
     });

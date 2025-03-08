@@ -102,6 +102,7 @@ public class OrderVO {
         OrderStatus orderStatus = new OrderStatus();
         orderStatus.setOrderId(this.orderId);
         orderStatus.setStatus(this.status);
+        orderStatus.setTimeStamp(this.orderDate);
         return orderStatus;
     }
 

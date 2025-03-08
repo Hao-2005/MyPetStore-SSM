@@ -6,10 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import org.csu.petstore.entity.*;
 import org.csu.petstore.service.CatalogService;
 import org.csu.petstore.service.UserService;
-import org.csu.petstore.vo.AccountVO;
-import org.csu.petstore.vo.CartItemVO;
-import org.csu.petstore.vo.CartVO;
-import org.csu.petstore.vo.ItemVO;
+import org.csu.petstore.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -220,29 +217,51 @@ public class UserController {
         String isAdd = (String) model.asMap().get("isAdd");
         if(loginAccount==null){
             return "account/signon";
-        }else{
+        }
+        else
+        {
             CartVO currentCart = userService.getCart(loginAccount.getUsername());
             CartItemVO cartItem = (CartItemVO) currentCart.getItemMap().get(workingItemId);
             if(isAdd.equals("true")){
                 if(cartItem==null){
                     CartItemVO newCartItem = new CartItemVO();
                     ItemVO itemVO = catalogService.getItem(workingItemId);
-                    Boolean isInStock = catalogService.isItemInStock(itemVO.getItemId());
-                    newCartItem.setItem(itemVO);
-                    newCartItem.setQuantity(1);
-                    newCartItem.setInStock(isInStock);
-                    userService.addCartItem(loginAccount.getUsername(), newCartItem);
+                    if(catalogService.checkItemQuantity(workingItemId,1)){
+                        Boolean isInStock = catalogService.isItemInStock(itemVO.getItemId());
+                        newCartItem.setItem(itemVO);
+                        newCartItem.setQuantity(1);
+                        newCartItem.setInStock(isInStock);
+                        userService.addCartItem(loginAccount.getUsername(), newCartItem);
 
-                    Date date = new Date();
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                    String currentDate = formatter.format(date);
-                    String addItemString = "User "+ loginAccount.getUsername() + " added product "
-                            + "<a href=\"itemForm?itemId=" + workingItemId + "\">" + workingItemId + "</a>"
-                            + " to the <a href=\"cartForm\">cart</a>.";
-                    userService.updateJournal(loginAccount.getUsername(), addItemString, currentDate, "#FFC000");
-                }else{
-                    cartItem.incrementQuantity();
-                    userService.updateCart(loginAccount.getUsername(), cartItem);
+                        Date date = new Date();
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                        String currentDate = formatter.format(date);
+                        String addItemString = "User "+ loginAccount.getUsername() + " added product "
+                                + "<a href=\"itemForm?itemId=" + workingItemId + "\">" + workingItemId + "</a>"
+                                + " to the <a href=\"cartForm\">cart</a>.";
+                        userService.updateJournal(loginAccount.getUsername(), addItemString, currentDate, "#FFC000");
+                    }else {
+                        model.addAttribute("addMsg","item is not in stock");
+                        List<Item> itemList = catalogService.getItemListByProduct(itemVO.getProductId());
+                        model.addAttribute("itemList", itemList);ProductVO product = catalogService.getProduct(itemVO.getProductId());
+                        model.addAttribute("product", product);
+                        return "catalog/product";
+                    }
+
+                }
+                else
+                {
+                    if(catalogService.checkItemQuantity(workingItemId,cartItem.getQuantity()+1)){
+                        cartItem.incrementQuantity();
+                        userService.updateCart(loginAccount.getUsername(), cartItem);
+                    }else {
+                        ItemVO itemVO = catalogService.getItem(workingItemId);
+                        model.addAttribute("addMsg","item is not in stock");
+                        ProductVO product = catalogService.getProduct(itemVO.getProductId());
+                        model.addAttribute("product", product);
+                        return "catalog/product";
+                    }
+
                 }
             }
             model.addAttribute("isAdd", "false");
@@ -289,14 +308,19 @@ public class UserController {
             String itemId = cartItem.getItem().getItemId();
             try {
                 String quantityString = (String) request.getAttribute(itemId);
-                System.out.println("quantityString:"+quantityString);
                 int quantity = Integer.parseInt(quantityString);
 
                 cartItem.setQuantity(quantity);
                 if (quantity < 1) {
                     userService.deleteItem(loginAccount.getUsername(), cartItem);
                 } else {
-                    userService.updateCart(loginAccount.getUsername(), cartItem);
+                    if(catalogService.checkItemQuantity(cartItem.getItem().getItemId(),quantity)){
+                        userService.updateCart(loginAccount.getUsername(), cartItem);
+                    }else{
+                        model.addAttribute("viewNewOrderMsg","Not enough stock");
+                        return "cart/cart";
+                    }
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -315,6 +339,7 @@ public class UserController {
                                  @RequestParam("itemId") String itemId,
                                  Model model) {
         CartItemVO cartItem = (CartItemVO) cart.getItemMap().get(itemId);
+        Map<String, BigDecimal> totals = new HashMap<>();
         try
         {
             if (quantity < 1)
@@ -323,8 +348,13 @@ public class UserController {
             }
             else
             {
-                cartItem.setQuantity(quantity);
-                userService.updateCart(loginAccount.getUsername(),cartItem);
+                if(catalogService.checkItemQuantity(cartItem.getItem().getItemId(),quantity)){
+                    cartItem.setQuantity(quantity);
+                    userService.updateCart(loginAccount.getUsername(),cartItem);
+                } else{
+                    totals.put("isOk", BigDecimal.valueOf(cartItem.getQuantity()));
+                    return totals;
+                }
             }
         }
         catch (Exception e)
@@ -334,9 +364,9 @@ public class UserController {
 
         CartVO newCart = userService.getCart(loginAccount.getUsername());
         model.addAttribute("cart", newCart);
-        Map<String, BigDecimal> totals = new HashMap<>();
         totals.put("cartItemTotal", cartItem.getTotal());
         totals.put("subTotal", newCart.getSubTotal());
+        totals.put("isOk", null);
         return totals;
 
     }
