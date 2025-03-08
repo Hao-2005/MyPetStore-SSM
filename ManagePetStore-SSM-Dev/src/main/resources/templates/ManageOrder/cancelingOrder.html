@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>cancelingOrder</title>
+</head>
+<body>
+<table>
+  <tr th:each="m:${order}">
+    <td th:text="${m.orderId}"></td>
+    <td th:text="${m.orderDate}"></td>
+    <td th:text="${m.getUserId()}"></td>
+    <td th:text="${m.getStatus()}"></td>
+    <td>
+      <a th:href="@{'../manageOrder/seeCancelingOrder/handleCancel?orderId=' + ${m.getOrderId()}}">click me to permit this cancel request</a>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>seeUserInfo</title>
+</head>
+<body>
+    <p>userId:</p>
+    <p th:text="${user}"></p>
+    <hr/>
+    <p>Bought products:</p>
+    <table>
+      <tr th:each="p:${bought}">
+        <td th:text="${p.getProductId()}"></td>
+        <td th:text="${p.getName()}"></td>
+        <td th:text="${p.getDescription()}"></td>
+      </tr>
+    </table>
+    <hr/>
+    <p>Interest products:</p>
+    <table>
+      <tr th:each="i:${interest}">
+        <td th:text="${i.getProductId()}"></td>
+        <td th:text="${i.getViewCount()}"></td>
+      </tr>
+    </table>
+    <hr/>
+    <p>Canceling orders:</p>
+    <table>
+      <tr th:each="cg:${cancelingOrder}">
+        <td th:text="${cg.getOrderId()}"></td>
+        <td th:text="${cg.getOrderDate()}"></td>
+      </tr>
+    </table>
+    <hr/>
+    <p>Canceled orders:</p>
+    <table>
+      <tr th:each="cd:${canceledOrder}">
+        <td th:text="${cd.getOrderId()}"></td>
+        <td th:text="${cd.getOrderDate()}"></td>
+      </tr>
+    </table>
+</body>
+</html>

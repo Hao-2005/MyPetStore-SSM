@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ManageOrder</title>
+</head>
+<body>
+    <a href="../manageOrder/seeDoingOrder">see all doing(delivering) orders</a><br/>
+    <a href="../manageOrder/seeDoneOrder">see all done(finish) orders</a><br/>
+    <a href="../manageOrder/seeCancelingOrder">see all canceling orders</a><br/>
+    <a href="../manageOrder/seeCanceledOrder">see all canceled orders</a><br/>
+    <table>
+        <tr th:each="m:${order}">
+            <td th:text="${m.orderId}"></td>
+            <td th:text="${m.orderDate}"></td>
+            <td th:text="${m.getUserId()}"></td>
+            <td th:text="${m.getStatus()}"></td>
+        </tr>
+    </table>
+</body>
+</html>
