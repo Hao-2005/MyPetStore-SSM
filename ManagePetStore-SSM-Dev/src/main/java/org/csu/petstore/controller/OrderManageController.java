@@ -28,12 +28,12 @@ public class OrderManageController {
         return "ManageOrder/cancelingOrder";
     }
 
-    @GetMapping("/manageOrder/seeCancelingOrder/handleCancel")
-    public String handleCancelOrder(@RequestParam("orderId") int orderId,Model model) {
-        orderStatusService.cancelOrder(orderId);
-        model.addAttribute("order",orderService.getCancelingOrders());
-        return "ManageOrder/cancelingOrder";
-    }
+//    @GetMapping("/manageOrder/seeCancelingOrder/handleCancel")
+//    public String handleCancelOrder(@RequestParam("orderId") int orderId,Model model) {
+//        orderStatusService.cancelOrder(orderId);
+//        model.addAttribute("order",orderService.getCancelingOrders());
+//        return "ManageOrder/cancelingOrder";
+//    }
 
     @GetMapping("/manageOrder/seeCanceledOrder")
     public String seeCanceledOrder(Model model) {
