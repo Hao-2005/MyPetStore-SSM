@@ -6,12 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("category")
-public class Category
-{
-    @TableId(value = "catid")
-    private String categoryId;
-    private String name;
-    @TableField("descn")
-    private String description;
+@TableName("productjournal")
+public class ProductJournal {
+    @TableId(value = "userId")
+    private String userId;
+    @TableField("productId")
+    private String productId;
 }

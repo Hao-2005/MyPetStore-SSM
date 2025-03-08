@@ -53,4 +53,11 @@ public class AccountServiceImpl implements AccountService {
 
         return userVos;
     }
+
+    @Override
+    public String getUserLastFourPhoneChars(String userId) {
+        Account account = accountMapper.selectById(userId);
+        String phone = account.getPhone();
+        return phone.substring(phone.length()-4);
+    }
 }

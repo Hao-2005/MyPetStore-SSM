@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>userInfo</title>
+</head>
+<body>
+    <table>
+      <tr th:each="m:${user}">
+        <td th:text="${m.userId}"></td>
+        <td>
+          <a th:href="@{'../manageUser/userInfo/seeInfo?userId=' + ${m.userId}}">click me to see Info</a>
+        </td>
+      </tr>
+    </table>
+</body>
+</html>

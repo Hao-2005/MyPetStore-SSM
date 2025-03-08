@@ -19,10 +19,8 @@ public class ItemVo {
     private String attribute4;
     private String attribute5;
     private String productName;
-    private int viewTime;   //商品浏览次数
 
     public ItemVo(){
-
     }
     public ItemVo(Item item){
         this.itemId = item.getItemId();
@@ -37,6 +35,5 @@ public class ItemVo {
         this.attribute4 = item.getAttribute4();
         this.attribute5 = item.getAttribute5();
         this.productName = null;
-        this.viewTime = 0;
     }
 }

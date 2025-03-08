@@ -22,7 +22,7 @@ public class ItemServiceImpl implements ItemService {
     ProductMapper productMapper;
 
     @Override
-    public List<ItemVo> getItemsByIds(List<Integer> ids) {
+    public List<ItemVo> getItemsByIds(List<String> ids) {
         List<ItemVo> itemVos = new ArrayList<ItemVo>();
         Item item;
         Product product;
@@ -31,9 +31,14 @@ public class ItemServiceImpl implements ItemService {
             product = productMapper.selectById(item.getProductId());
             ItemVo itemVo = new ItemVo(item);
             itemVo.setProductName(product.getName());
-            itemVo.setViewTime(0);  //浏览次数 后期修改
             itemVos.add(itemVo);
         }
         return itemVos;
+    }
+
+    @Override
+    public String getProductIdByItemId(String itemId) {
+        Item item = itemMapper.selectById(itemId);
+        return item.getProductId();
     }
 }

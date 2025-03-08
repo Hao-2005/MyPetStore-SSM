@@ -5,5 +5,6 @@ import org.csu.petstore.vo.ItemVo;
 import java.util.List;
 
 public interface ItemService {
-    public List<ItemVo> getItemsByIds(List<Integer> ids);
+    public List<ItemVo> getItemsByIds(List<String> ids);
+    public String getProductIdByItemId(String itemId);
 }

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>doingOrder</title>
+</head>
+<body>
+    <table>
+      <tr th:each="m:${order}">
+        <td th:text="${m.orderId}"></td>
+        <td th:text="${m.orderDate}"></td>
+        <td th:text="${m.getUserId()}"></td>
+        <td th:text="${m.getStatus()}"></td>
+        <td>
+          <a th:href="@{'../manageOrder/seeDoingOrder/handleFinish?orderId=' + ${m.getOrderId()}}">click me to finish this order</a>
+        </td>
+      </tr>
+    </table>
+</body>
+</html>
