@@ -235,6 +235,7 @@ public class OrderController {
         if (!image.isEmpty()) {
             try {
                 String uploadDir = System.getProperty("user.dir") + "/../Images/";
+                System.out.println(uploadDir);
                 File dir = new File(uploadDir);
                 if (!dir.exists()) {
                     dir.mkdirs(); // 创建目录
@@ -245,7 +246,7 @@ public class OrderController {
                 image.transferTo(destFile);
 
                 //存储图片路径
-                imagePath = "/../images/" + fileName;
+                imagePath = "/../Images/" + fileName;
 
             } catch (IOException e) {
                 e.printStackTrace();

@@ -15,5 +15,5 @@ public interface OrderService {
     public List<OrderVo> getUserDoneOrders(String userId);  //获得用户已完成的订单
     public List<OrderVo> getUserCancelingOrders(String userId); //获得用户待取消的订单
     public List<OrderVo> getUserCanceledOrders(String userId);  //获得用户已取消的订单
-
+    public OrderVo getOrderById(String orderId);
 }

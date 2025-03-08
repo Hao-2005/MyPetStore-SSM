@@ -234,4 +234,24 @@ public class OrderServiceImpl implements OrderService {
 
         return result;
     }
+
+    @Override
+    public OrderVo getOrderById(String orderId)
+    {
+        Order order = orderMapper.selectById(orderId);
+        OrderVo orderVo = new OrderVo(order);
+        OrderStatus orderStatus = orderStatusMapper.selectById(order.getOrderId());
+        if (orderStatus == null) {
+            orderStatus = new OrderStatus();
+            orderStatus.setOrderId(order.getOrderId());
+            orderStatus.setStatus("Error"); // 设置默认状态
+        }
+
+        orderVo.setStatus(orderStatus.getStatus());
+
+        //get order line items
+        orderVo.setLineItems(lineItemService.getLineItemsById(order.getOrderId()));
+
+        return orderVo;
+    }
 }

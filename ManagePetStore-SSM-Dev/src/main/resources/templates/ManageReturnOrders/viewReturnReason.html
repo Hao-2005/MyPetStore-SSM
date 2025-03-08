@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        img
+        {
+            width: 15%;
+        }
+
+        table
+        {
+            border-collapse: collapse;
+        }
+
+        table, th, td
+        {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1 th:text="'The Return Reasons of ' + ${returnOrder.orderVo.orderId}"></h1>
+
+    <form th:action="@{/manageReturnOrders/processRequest(orderId=${returnOrder.orderVo.orderId})}" method="post">
+        <p>Reason</p>
+        <input th:value="${returnOrder.returnOrder.reason}" readonly><br>
+
+        <p>Description:</p>
+        <textarea th:text="${returnOrder.returnOrder.descn}" readonly></textarea><br>
+
+        <p>Picture:</p>
+        <img th:src="${image}" alt="A picture of return reasons."><br>
+
+        <input type="submit" value="Agree" name="result">
+        <input type="submit" value="Disagree" name="result">
+    </form>
+
+    <h1 th:text="'Detailed Information of Order ' + ${returnOrder.orderVo.orderId}"></h1>
+
+    <table>
+        <tr>
+            <th align="center" colspan="4">
+                Order #<span th:text="${returnOrder.orderVo.orderId}"></span>
+                <span th:text="${#dates.format(returnOrder.orderVo.orderDate, 'yyyy/MM/dd HH:mm:ss')}"></span>
+            </th>
+        </tr>
+
+        <tr>
+            <th colspan="4">Payment Details</th>
+        </tr>
+        <tr>
+            <th colspan="2">Card Type:</th>
+            <td colspan="2" th:text="${returnOrder.orderVo.cardType}"></td>
+        </tr>
+        <tr>
+            <th colspan="2">Card Number:</th>
+            <td colspan="2" th:text="${returnOrder.orderVo.creditCard}"></td>
+        </tr>
+        <tr>
+            <th colspan="2">Expiry Date (MM/YYYY):</th>
+            <td colspan="2" th:text="${returnOrder.orderVo.expiryDate}"></td>
+        </tr>
+
+        <tr>
+            <th colspan="4">Billing Address</th>
+        </tr>
+        <tr>
+            <th>First name:</th>
+            <td th:text="${returnOrder.orderVo.billToFirstName ?: ''}"></td>
+            <th>City:</th>
+            <td th:text="${returnOrder.orderVo.billCity ?: ''}"></td>
+        </tr>
+        <tr>
+            <th>Last name:</th>
+            <td th:text="${returnOrder.orderVo.billToLastName ?: ''}"></td>
+            <th>State:</th>
+            <td th:text="${returnOrder.orderVo.billState ?: ''}"></td>
+        </tr>
+        <tr>
+            <th>Address 1:</th>
+            <td th:text="${returnOrder.orderVo.billAddress1 ?: ''}"></td>
+            <th>Zip:</th>
+            <td th:text="${returnOrder.orderVo.billZip ?: ''}"></td>
+        </tr>
+        <tr>
+            <th>Address 2:</th>
+            <td th:text="${returnOrder.orderVo.billAddress2 ?: ''}"></td>
+            <th>Country:</th>
+            <td th:text="${returnOrder.orderVo.billCountry ?: ''}"></td>
+        </tr>
+
+        <tr>
+            <th colspan="4">Shipping Address</th>
+        </tr>
+        <tr>
+            <th>First name:</th>
+            <td th:text="${returnOrder.orderVo.shipToFirstName ?: ''}"></td>
+            <th>City:</th>
+            <td th:text="${returnOrder.orderVo.shipCity ?: ''}"></td>
+        </tr>
+        <tr>
+            <th>Last name:</th>
+            <td th:text="${returnOrder.orderVo.shipToLastName ?: ''}"></td>
+            <th>State:</th>
+            <td th:text="${returnOrder.orderVo.shipState ?: ''}"></td>
+        </tr>
+        <tr>
+            <th>Address 1:</th>
+            <td th:text="${returnOrder.orderVo.shipAddress1 ?: ''}"></td>
+            <th>Zip:</th>
+            <td th:text="${returnOrder.orderVo.shipZip ?: ''}"></td>
+        </tr>
+        <tr>
+            <th>Address 2:</th>
+            <td th:text="${returnOrder.orderVo.shipAddress2 ?: ''}"></td>
+            <th>Country:</th>
+            <td th:text="${returnOrder.orderVo.shipCountry ?: ''}"></td>
+        </tr>
+
+        <tr>
+            <th>Courier:</th>
+            <td th:text="${returnOrder.orderVo.courier ?: ''}"></td>
+            <th>Status:</th>
+            <td th:text="${returnOrder.orderVo.status ?: ''}"></td>
+        </tr>
+
+        <tr>
+            <th colspan="4">Purchased Items</th>
+        </tr>
+        <tr>
+            <th>Item ID</th>
+            <th>Quantity</th>
+            <th colspan="2">Price</th>
+        </tr>
+
+        <tr th:each="lineItem : ${returnOrder.orderVo.lineItems}">
+            <td style="text-align: center" th:text="${lineItem.itemId}"></td>
+            <td style="text-align: center" th:text="${lineItem.quantity}"></td>
+            <td style="text-align: center" colspan="2" th:text="${#numbers.formatDecimal(lineItem.unitPrice, 1, 2)}"></td>
+        </tr>
+
+        <tr>
+            <th colspan="4">
+                Total: <span th:text="${#numbers.formatDecimal(returnOrder.orderVo.totalPrice, 1, 2)}"></span>
+            </th>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .status-W { color: #F4B183; }
+        .status-N { color: #A9D18E; }
+        .status-unknown { color: #C00000; }
+
+        table
+        {
+            border-collapse: collapse;
+        }
+
+        table, th, td
+        {
+            border: 1px solid black;
+        }
+    </style>
+    </style>
+</head>
+<body>
+    <h1>Return Orders</h1>
+    <table>
+        <tr>
+            <th>Order Id</th>
+            <th>Order Date</th>
+            <th>Total Price</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Operation</th>
+        </tr>
+        <tr th:each="return:${returnOrderList}">
+            <td th:text="${return.returnOrder.orderId}"></td>
+            <td th:text="${return.orderVo.orderDate}"></td>
+            <td th:text="${return.orderVo.totalPrice}"></td>
+            <td th:text="${return.orderVo.userId}"></td>
+            <td  th:class="'status-' + ${return.orderVo.status}">
+                <span th:switch="${return.orderVo.status}">
+                    <span th:case="'W'">Returns Under Review</span>
+                    <span th:case="'N'">Return Request Agreed</span>
+                    <span th:case="*">Return Request Refused</span>
+                </span>
+            </td>
+            <td th:if="${return.orderVo.status == 'W'}">
+                <a th:href="@{/manageReturnOrders/viewReason(orderId=${return.returnOrder.orderId})}">Details</a>
+            </td>
+            <td th:unless="${return.orderVo.status == 'W'}"></td>
+        </tr>
+    </table>
+
+    <!--以弹窗形式显示退货申请处理结果-->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var msg = /*[[${msg}]]*/ '';
+        if (msg !== null && msg !== '') {
+            alert(msg);
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>
