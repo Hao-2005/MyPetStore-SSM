@@ -17,6 +17,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { springBoot } from "@/app/config"
+import { Big_Shoulders_Display } from "next/font/google"
+
+const bigShouldersInlineDisplay = Big_Shoulders_Display({
+    weight: "400",
+    subsets: ["latin"]
+});
 
 const formSchema = z.object({
     username: z.string().min(2, {
@@ -63,7 +69,7 @@ export default function RegisterForm() {
     return (
     <div className="w-full bg-rose-400 h-screen flex flex-col
         justify-center items-center shadow-lg bg-linear-to-r/shorter from-indigo-500 to-teal-400 to-indigo-500">
-        <h1 className="text-white text-3xl mb-5 font-bold italic" style={{fontFamily: "Big Shoulders Inline"}}>Register</h1>
+            <h1 className={`text-white text-3xl mb-5 font-bold italic ${bigShouldersInlineDisplay.className}`}>Register</h1>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-8 bg-white w-1/4 p-4 rounded-lg">
