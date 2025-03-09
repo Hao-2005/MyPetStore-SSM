@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <title>用户管理</title>
     <link rel="stylesheet" th:href="@{/css/manageUser.css}">
+    <style>
+        .clickable-row {
+            cursor: pointer;
+        }
+        .clickable-row:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
 </head>
 <body>
     <h2>用户列表</h2>
@@ -13,7 +21,7 @@
             <th>密码</th>
             <th>邮箱</th>
         </tr>
-        <tr th:each="m:${user}">
+        <tr th:each="m:${user}" class="clickable-row" th:onclick="'window.location.href=\'' + @{'/manageUser/userInfo/seeInfo?userId=' + ${m.userId}} + '\''">
             <td th:text="${m.userId}"></td>
             <td th:text="${m.password}"></td>
             <td th:text="${m.userEmail}"></td>
@@ -21,7 +29,6 @@
     </table>
     <br/>
     <a href="../manageUser/resetPassword">重置密码</a>
-    <a href="../manageUser/userInfo">查看用户详情</a>
     <a href="/">返回首页</a>
 </body>
 </html>

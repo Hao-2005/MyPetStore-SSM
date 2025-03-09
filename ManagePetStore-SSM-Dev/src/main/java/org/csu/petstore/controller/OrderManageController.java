@@ -18,45 +18,38 @@ public class OrderManageController {
 
     @GetMapping("/manageOrder")
     public String manageOrder(Model model) {
-        model.addAttribute("order",orderService.getAllOrders());
-        return "ManageOrder/manageOrder";
+        model.addAttribute("order", orderService.getDoingOrders());  // 改为显示待处理订单
+      return "ManageOrder/manageOrder";
     }
 
-    @GetMapping("/manageOrder/seeCancelingOrder")
-    public String seeCancelingOrder(Model model) {
-        model.addAttribute("order",orderService.getCancelingOrders());
-        return "ManageOrder/cancelingOrder";
+    @GetMapping("/manageOrder/doing")
+    public String getDoingOrders(Model model) {
+        model.addAttribute("order", orderService.getDoingOrders());
+        return "ManageOrder/manageOrder :: #orderTableBody";
     }
 
-//    @GetMapping("/manageOrder/seeCancelingOrder/handleCancel")
-//    public String handleCancelOrder(@RequestParam("orderId") int orderId,Model model) {
-//        orderStatusService.cancelOrder(orderId);
-//        model.addAttribute("order",orderService.getCancelingOrders());
-//        return "ManageOrder/cancelingOrder";
-//    }
-
-    @GetMapping("/manageOrder/seeCanceledOrder")
-    public String seeCanceledOrder(Model model) {
-        model.addAttribute("order",orderService.getCanceledOrders());
-        return "ManageOrder/canceledOrder";
+    @GetMapping("/manageOrder/done")
+    public String getDoneOrders(Model model) {
+        model.addAttribute("order", orderService.getDoneOrders());
+        return "ManageOrder/manageOrder :: #orderTableBody";
     }
 
-    @GetMapping("/manageOrder/seeDoingOrder")
-    public String seeDoingOrder(Model model) {
-        model.addAttribute("order",orderService.getDoingOrders());
-        return "ManageOrder/doingOrder";
+    @GetMapping("/manageOrder/canceling")
+    public String getCancelingOrders(Model model) {
+        model.addAttribute("order", orderService.getCancelingOrders());
+        return "ManageOrder/manageOrder :: #orderTableBody";
     }
 
-    @GetMapping("/manageOrder/seeDoingOrder/handleFinish")
-    public String handleFinishOrder(@RequestParam("orderId") int orderId,Model model) {
+    @GetMapping("/manageOrder/canceled")
+    public String getCanceledOrders(Model model) {
+        model.addAttribute("order", orderService.getCanceledOrders());
+        return "ManageOrder/manageOrder :: #orderTableBody";
+    }
+
+    @GetMapping("/manageOrder/finish")
+    public String handleFinishOrder(@RequestParam("orderId") int orderId, Model model) {
         orderStatusService.finishOrder(orderId);
-        model.addAttribute("order",orderService.getDoingOrders());
-        return "ManageOrder/doingOrder";
-    }
-
-    @GetMapping("/manageOrder/seeDoneOrder")
-    public String seeDoneOrder(Model model) {
-        model.addAttribute("order",orderService.getDoneOrders());
-        return "ManageOrder/doneOrder";
+        model.addAttribute("order", orderService.getDoingOrders());
+        return "ManageOrder/manageOrder :: #orderTableBody";
     }
 }

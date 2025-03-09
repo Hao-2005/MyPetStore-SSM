@@ -4,37 +4,138 @@
     <meta charset="UTF-8">
     <title>订单管理</title>
     <link rel="stylesheet" th:href="@{/css/manageOrder.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="order-container">
         <h2 class="page-title">订单管理系统</h2>
         <div class="nav-links">
-            <a href="../manageOrder/seeDoingOrder">待处理订单</a>
-            <a href="../manageOrder/seeDoneOrder">已完成订单</a>
-            <a href="../manageOrder/seeCancelingOrder">待取消订单</a>
-            <a href="../manageOrder/seeCanceledOrder">已取消订单</a>
-        </div>
-        <table class="order-table">
-            <thead>
-                <tr>
-                    <th>订单ID</th>
-                    <th>订单日期</th>
-                    <th>用户ID</th>
-                    <th>订单状态</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="m:${order}">
-                    <td th:text="${m.orderId}"></td>
-                    <td th:text="${m.orderDate}"></td>
-                    <td th:text="${m.getUserId()}"></td>
-                    <td th:text="${m.getStatus()}"></td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="nav-links">
             <a href="/" class="back-link">返回首页</a>
         </div>
+        <div class="nav-links tab-container">
+            <a href="#" class="tab-link active" data-type="doing">待处理订单</a>
+            <a href="#" class="tab-link" data-type="done">已完成订单</a>
+            <a href="#" class="tab-link" data-type="canceling">待取消订单</a>
+            <a href="#" class="tab-link" data-type="canceled">已取消订单</a>
+        </div>
+        <div class="table-container">
+            <div id="loading" class="loading" style="display: none;">加载中...</div>
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>订单ID</th>
+                        <th>订单日期</th>
+                        <th>用户ID</th>
+                        <th>订单状态</th>
+                        <th id="actionColumn">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                    <tr th:each="m:${order}">
+                        <td th:text="${m.orderId}"></td>
+                        <td th:text="${m.orderDate}"></td>
+                        <td th:text="${m.getUserId()}"></td>
+                        <td th:text="${m.getStatus()}"></td>
+                        <td th:if="${m.getStatus() == 'P'}" class="action-cell">
+                            <button class="finish-btn" th:onclick="'handleFinish(' + ${m.orderId} + ', event)'">
+                                <i class="fas fa-check"></i> 完成订单
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-link');
+            const actionColumn = document.getElementById('actionColumn');
+            const tableBody = document.getElementById('orderTableBody');
+            const loading = document.getElementById('loading');
+            let currentOrders = null;
+
+            function showLoading() {
+                loading.style.display = 'block';
+            }
+
+            function hideLoading() {
+                loading.style.display = 'none';
+            }
+
+            function updateTable(type) {
+            // 更新标签激活状态
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if(tab.getAttribute('data-type') === type) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // 显示或隐藏操作列
+            actionColumn.style.display = type === 'doing' ? 'table-cell' : 'none';
+
+            showLoading();
+
+            // 获取对应类型的订单数据
+            fetch(`/manageOrder/${type}`)
+                .then(response => response.text())
+                .then(html => {
+                    const tableBody = document.getElementById('orderTableBody');
+                    tableBody.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('加载数据失败，请重试');
+                })
+                .finally(() => {
+                    hideLoading();
+                });
+        }
+
+
+            // 添加标签点击事件
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const type = tab.getAttribute('data-type');
+                    updateTable(type);
+                });
+            });
+
+            // 处理完成订单的函数
+            window.handleFinish = function(orderId, event) {
+    event.preventDefault();
+    const btn = event.currentTarget;
+    
+    if(confirm('确认完成此订单？')) {
+        // 添加加载状态
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
+        
+        showLoading();
+        fetch(`/manageOrder/finish?orderId=${orderId}`)
+            .then(response => response.text())
+            .then(html => {
+                const tableBody = document.getElementById('orderTableBody');
+                tableBody.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('操作失败，请重试');
+                // 恢复按钮状态
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                btn.innerHTML = '<i class="fas fa-check"></i> 完成订单';
+            })
+            .finally(() => {
+                hideLoading();
+            });
+    }
+};
+        });
+        updateTable('doing');
+    </script>
 </body>
 </html>
