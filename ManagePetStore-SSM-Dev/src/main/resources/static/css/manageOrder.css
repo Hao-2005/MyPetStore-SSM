@@ -1,0 +1,59 @@
+/*managerOrder.css*/
+.order-container {
+    padding: 20px;
+}
+
+.nav-links {
+    margin-bottom: 20px;
+}
+
+.nav-links a {
+    display: inline-block;
+    padding: 8px 15px;
+    margin: 5px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.order-table th,
+.order-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.order-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.order-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.action-link {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.action-link:hover {
+    text-decoration: underline;
+}
+
+.page-title {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.back-link {
+    margin-top: 20px;
+    display: inline-block;
+}
