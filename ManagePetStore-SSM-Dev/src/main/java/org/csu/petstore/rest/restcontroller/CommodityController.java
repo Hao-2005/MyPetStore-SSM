@@ -1,23 +1,21 @@
-package org.csu.petstore.controller;
+package org.csu.petstore.rest.restcontroller;
 
 import org.csu.petstore.entity.Item;
 import org.csu.petstore.service.ProductService;
 import org.csu.petstore.vo.ItemVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import org.csu.petstore.service.ItemService;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/commodity")
+@RequestMapping("/api/commodity")
 public class CommodityController
 {
     @Autowired
@@ -39,9 +37,11 @@ public class CommodityController
         return itemVo;
     }
 
-    @RequestMapping("/modifyStock")
+    @RequestMapping("/modifyStock/{itemId}/{quantity}")
     @ResponseBody
-    public Map<String ,String> modifyStock(String itemId, int quantity) {
+    public ResponseEntity<Map<String ,String>> modifyStock(
+            @PathVariable(name="itemId") String itemId,
+            @PathVariable(name="quantity") int quantity) {
         int status;
         String message;
         if(itemService.updateInventoryByItem(itemId, quantity)){
@@ -50,14 +50,14 @@ public class CommodityController
             Map<String,String> map = new HashMap<>();
             map.put("status", String.valueOf(status));
             map.put("message", message);
-            return map;
+            return ResponseEntity.ok(map);
         }else {
             status = 0;
             message = "修改库存失败";
             Map<String,String> map = new HashMap<>();
             map.put("status", String.valueOf(status));
             map.put("message", message);
-            return map;
+            return ResponseEntity.badRequest().body(map);
         }
     }
 
@@ -71,7 +71,8 @@ public class CommodityController
 
     @RequestMapping("/updateItem")
     @ResponseBody
-    public String updateItem(ItemVo itemVo) {
+    public ResponseEntity<Map<String, String>> updateItem(
+            @RequestBody ItemVo itemVo) {
         Item item = itemService.getItemById(itemVo.getItemId());
         item.setListPrice(itemVo.getListPrice());
         item.setUnitCost(itemVo.getUnitCost());
@@ -83,9 +84,9 @@ public class CommodityController
         item.setProductId(itemVo.getProductId());
         itemService.updateItem(item);
         if(itemService.setItemModified(itemVo.getItemId(),0))
-            return "success";
+            return ResponseEntity.ok(Map.of("status","success"));
         else
-            return "fail";
+            return ResponseEntity.badRequest().body(Map.of("status","fail"));
     }
 
     @RequestMapping("/deleteItem")
