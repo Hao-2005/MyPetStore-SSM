@@ -2,16 +2,33 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>doneOrder</title>
+    <title>已完成订单</title>
+    <link rel="stylesheet" th:href="@{/css/manageOrder.css}">
 </head>
 <body>
-    <table>
-      <tr th:each="m:${order}">
-        <td th:text="${m.orderId}"></td>
-        <td th:text="${m.orderDate}"></td>
-        <td th:text="${m.getUserId()}"></td>
-        <td th:text="${m.getStatus()}"></td>
-      </tr>
-    </table>
+    <div class="order-container">
+        <h2 class="page-title">已完成订单列表</h2>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>订单ID</th>
+                    <th>订单日期</th>
+                    <th>用户ID</th>
+                    <th>订单状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="m:${order}">
+                    <td th:text="${m.orderId}"></td>
+                    <td th:text="${m.orderDate}"></td>
+                    <td th:text="${m.getUserId()}"></td>
+                    <td th:text="${m.getStatus()}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="nav-links">
+            <a href="/" class="back-link">返回首页</a>
+        </div>
+    </div>
 </body>
 </html>
