@@ -2,10 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>用户管理</title>
+    <link rel="stylesheet" th:href="@{/css/manageUser.css}">
 </head>
 <body>
+    <h2>用户列表</h2>
     <table>
+        <tr>
+            <th>用户ID</th>
+            <th>密码</th>
+            <th>邮箱</th>
+        </tr>
         <tr th:each="m:${user}">
             <td th:text="${m.userId}"></td>
             <td th:text="${m.password}"></td>
@@ -13,7 +20,8 @@
         </tr>
     </table>
     <br/>
-    <a href="../manageUser/resetPassword">click me to reset password</a>
-    <a href="../manageUser/userInfo">click me to see userInfo</a>
+    <a href="../manageUser/resetPassword">重置密码</a>
+    <a href="../manageUser/userInfo">查看用户详情</a>
+    <a href="/">返回首页</a>
 </body>
 </html>

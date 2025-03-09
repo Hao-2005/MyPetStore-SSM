@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <meta charset="UTF-8">
-    <title>userInfo</title>
+    <title>用户信息</title>
+    <link rel="stylesheet" th:href="@{/css/manageUser.css}">
 </head>
 <body>
+    <h2>用户详细信息列表</h2>
     <table>
-      <tr th:each="m:${user}">
-        <td th:text="${m.userId}"></td>
-        <td>
-          <a th:href="@{'../manageUser/userInfo/seeInfo?userId=' + ${m.userId}}">click me to see Info</a>
-        </td>
-      </tr>
+        <tr>
+            <th>用户ID</th>
+            <th>操作</th>
+        </tr>
+        <tr th:each="m:${user}">
+            <td th:text="${m.userId}"></td>
+            <td>
+                <a th:href="@{'../manageUser/userInfo/seeInfo?userId=' + ${m.userId}}">查看详细信息</a>
+            </td>
+        </tr>
     </table>
+    <br/>
+    <a href="/manageUser">返回用户管理</a>
 </body>
 </html>

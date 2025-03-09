@@ -2,20 +2,39 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>ManageOrder</title>
+    <title>订单管理</title>
+    <link rel="stylesheet" th:href="@{/css/manageOrder.css}">
 </head>
 <body>
-    <a href="../manageOrder/seeDoingOrder">see all doing(delivering) orders</a><br/>
-    <a href="../manageOrder/seeDoneOrder">see all done(finish) orders</a><br/>
-    <a href="../manageOrder/seeCancelingOrder">see all canceling orders</a><br/>
-    <a href="../manageOrder/seeCanceledOrder">see all canceled orders</a><br/>
-    <table>
-        <tr th:each="m:${order}">
-            <td th:text="${m.orderId}"></td>
-            <td th:text="${m.orderDate}"></td>
-            <td th:text="${m.getUserId()}"></td>
-            <td th:text="${m.getStatus()}"></td>
-        </tr>
-    </table>
+    <div class="order-container">
+        <h2 class="page-title">订单管理系统</h2>
+        <div class="nav-links">
+            <a href="../manageOrder/seeDoingOrder">待处理订单</a>
+            <a href="../manageOrder/seeDoneOrder">已完成订单</a>
+            <a href="../manageOrder/seeCancelingOrder">待取消订单</a>
+            <a href="../manageOrder/seeCanceledOrder">已取消订单</a>
+        </div>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>订单ID</th>
+                    <th>订单日期</th>
+                    <th>用户ID</th>
+                    <th>订单状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="m:${order}">
+                    <td th:text="${m.orderId}"></td>
+                    <td th:text="${m.orderDate}"></td>
+                    <td th:text="${m.getUserId()}"></td>
+                    <td th:text="${m.getStatus()}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="nav-links">
+            <a href="/" class="back-link">返回首页</a>
+        </div>
+    </div>
 </body>
 </html>

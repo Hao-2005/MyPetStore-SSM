@@ -3,16 +3,20 @@
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 /* 标题样式 */
 h2 {
     color: #333;
     margin-bottom: 20px;
+    font-size: 24px;
 }
 
 h3 {
-    color: #4CAF50;
+    color: #0984e3;
     margin: 15px 0;
 }
 
@@ -24,18 +28,18 @@ table {
 }
 
 th, td {
-    border: 1px solid #ddd;
+    border: 1px solid #eee;
     padding: 12px;
     text-align: left;
 }
 
 th {
-    background-color: #4CAF50;
+    background-color: #6c5ce7;
     color: white;
 }
 
 tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f8f9fa;
 }
 
 /* 链接按钮样式 */
@@ -43,20 +47,21 @@ a {
     display: inline-block;
     padding: 8px 15px;
     margin: 5px;
-    background-color: #4CAF50;
+    background-color: #00cec9;
     color: white;
     text-decoration: none;
     border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
 a:hover {
-    background-color: #45a049;
+    background-color: #0984e3;
 }
 
 /* 分隔线样式 */
 hr {
     border: 0;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #eee;
     margin: 20px 0;
 }
 
@@ -64,17 +69,45 @@ hr {
 .user-info {
     margin: 20px 0;
     padding: 15px;
-    background-color: #f9f9f9;
+    background-color: #f8f9fa;
     border-radius: 4px;
+    border: 1px solid #eee;
 }
 
 /* 表格容器 */
 .table-container {
     margin: 20px 0;
     overflow-x: auto;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 /* 返回链接样式 */
 .back-link {
     margin-top: 20px;
+}
+
+/* 按钮样式 */
+button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: background-color 0.3s;
+}
+
+.viewButton {
+    background-color: #00cec9;
+    color: white;
+}
+
+button:not(.viewButton) {
+    background-color: #0984e3;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
 }

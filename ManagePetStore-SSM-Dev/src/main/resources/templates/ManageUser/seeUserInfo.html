@@ -1,44 +1,65 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <meta charset="UTF-8">
-    <title>seeUserInfo</title>
+    <title>用户详细信息</title>
+    <link rel="stylesheet" th:href="@{/css/manageUser.css}">
 </head>
 <body>
-    <p>userId:</p>
-    <p th:text="${user}"></p>
+    <h2>用户详细信息</h2>
+    <h3>用户ID: <span th:text="${user}"></span></h3>
     <hr/>
-    <p>Bought products:</p>
+    
+    <h3>购买的商品:</h3>
     <table>
-      <tr th:each="p:${bought}">
-        <td th:text="${p.getProductId()}"></td>
-        <td th:text="${p.getName()}"></td>
-        <td th:text="${p.getDescription()}"></td>
-      </tr>
+        <tr>
+            <th>商品ID</th>
+            <th>商品名称</th>
+            <th>商品描述</th>
+        </tr>
+        <tr th:each="p:${bought}">
+            <td th:text="${p.getProductId()}"></td>
+            <td th:text="${p.getName()}"></td>
+            <td th:text="${p.getDescription()}"></td>
+        </tr>
     </table>
-    <hr/>
-    <p>Interest products:</p>
+    
+    <h3>感兴趣的商品:</h3>
     <table>
-      <tr th:each="i:${interest}">
-        <td th:text="${i.getProductId()}"></td>
-        <td th:text="${i.getViewCount()}"></td>
-      </tr>
+        <tr>
+            <th>商品ID</th>
+            <th>浏览次数</th>
+        </tr>
+        <tr th:each="i:${interest}">
+            <td th:text="${i.getProductId()}"></td>
+            <td th:text="${i.getViewCount()}"></td>
+        </tr>
     </table>
-    <hr/>
-    <p>Canceling orders:</p>
+    
+    <h3>待取消订单:</h3>
     <table>
-      <tr th:each="cg:${cancelingOrder}">
-        <td th:text="${cg.getOrderId()}"></td>
-        <td th:text="${cg.getOrderDate()}"></td>
-      </tr>
+        <tr>
+            <th>订单ID</th>
+            <th>订单日期</th>
+        </tr>
+        <tr th:each="cg:${cancelingOrder}">
+            <td th:text="${cg.getOrderId()}"></td>
+            <td th:text="${cg.getOrderDate()}"></td>
+        </tr>
     </table>
-    <hr/>
-    <p>Canceled orders:</p>
+    
+    <h3>已取消订单:</h3>
     <table>
-      <tr th:each="cd:${canceledOrder}">
-        <td th:text="${cd.getOrderId()}"></td>
-        <td th:text="${cd.getOrderDate()}"></td>
-      </tr>
+        <tr>
+            <th>订单ID</th>
+            <th>订单日期</th>
+        </tr>
+        <tr th:each="cd:${canceledOrder}">
+            <td th:text="${cd.getOrderId()}"></td>
+            <td th:text="${cd.getOrderDate()}"></td>
+        </tr>
     </table>
+    <br/>
+    <a href="/manageUser/userInfo">返回用户列表</a>
 </body>
 </html>
