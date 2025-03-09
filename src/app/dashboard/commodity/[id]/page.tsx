@@ -1,7 +1,7 @@
 'use client'
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import type { Item as ItemType } from '@/app/config'
+import React, { useEffect, useState } from 'react';
+import { springBoot, type Item as ItemType } from '@/app/config'
 import { Button, Card } from '@mui/material';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -52,10 +52,48 @@ export default function Item() {
         image = image.slice(2);
     }
 
+    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const itemVo = {
+            itemId: formData.get("itemId"),
+            listPrice: formData.get("listprice"),
+            unitCost: formData.get("unitcost"),
+            status: formData.get("status"),
+            attribute1: formData.get("attr1"),
+            attribute2: formData.get("attr2"),
+            attribute3: formData.get("attr3"),
+            attribute4: formData.get("attr4"),
+            productId: formData.get("productid"),
+            quantity: formData.get("quantity"),
+        }
+        console.log(itemVo);
+        fetch(`${springBoot}/commodity/updateItem`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(itemVo),
+        }).then(resp => resp.json()).then(data => {
+            if (data.status === "success") {
+                //toast.success("修改成功");
+                alert("商品信息修改成功");
+            }
+        }).catch(err => {
+            alert("商品信息修改失败");
+        });
+        fetch(`${springBoot}/commodity/modifyStock/${itemVo.itemId}/${itemVo.quantity}`)
+            .then(resp => resp.json()).then(data => {
+                alert(data.message);
+            }).catch(err => {
+                alert("库存信息修改失败");
+            });
+    }
+
     return (
         <div className='flex'> 
             <Card className="p-4">
-                <form action="" className="flex  gap-4 w-fit">
+                <form action="" className="flex  gap-4 w-fit" onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="itemId">item ID</Label>
@@ -78,6 +116,10 @@ export default function Item() {
                             <Label htmlFor="listprice">List Price</Label>
                             <Input type="text" id="listprice" name="listprice" defaultValue={data.listprice} />
                         </div>
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="unitcost">Unit Cost</Label>
+                            <Input type="text" id="unitcost" name="unitcost" defaultValue={data.unitcost} />
+                        </div>
                     </div>
                     <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2">
@@ -91,7 +133,7 @@ export default function Item() {
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="attrSelect">Select Attribute</Label>
                             <select className="border-2 rounded-md p-2"
-                                id="attrSelect" value={selectedAttr} onChange={(e) => setSelectedAttr(e.target.value)} className="border p-2">
+                                id="attrSelect" value={selectedAttr} onChange={(e) => setSelectedAttr(e.target.value)} >
                                 {attrFields.map(attr => (
                                     <option key={attr} value={attr}>{attr}</option>
                                 ))}
@@ -104,7 +146,7 @@ export default function Item() {
                             </div>
                         ))}
                         <div className="bg-lime-100 w-fit rounded-md">
-                            <Button>Update</Button>
+                            <Button type="submit">Update</Button>
                         </div>
                     </div>
                 </form>

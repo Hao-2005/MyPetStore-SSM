@@ -55,6 +55,7 @@ export type Item = {
     quantity: number,
     description: string,
     listprice: number,
+    unitcost: number,
     supplier: number,
     status: string,
     attr1: string,

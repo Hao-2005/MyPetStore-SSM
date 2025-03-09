@@ -46,12 +46,66 @@ export async function getItemById(id: string) {
             itemid, name AS productName,
             item.productid, qty AS quantity,
             descn AS description, listprice,
-            supplier, status,
+            unitcost,supplier, status,
             attr1, attr2, attr3, attr4, attr5
         FROM item
         NATURAL JOIN inventory
         JOIN product ON item.productid = product.productid
         WHERE itemid = '${id}'`
+        const [results] = await connection.execute(query);
+        connection.end();
+
+        return NextResponse.json(results);
+    } catch (error) {
+        const response = {
+            error: (error as Error).message,
+            returnedStatus: 200,
+        }
+        return NextResponse.json(response, { status: 200 });
+    }
+}
+
+export async function getItemByName(name: string) {
+    try { 
+        const connection = await mysql.createConnection(connectionParams);
+        const query =
+        `SELECT
+            itemid, name AS productName,
+            item.productid, qty AS quantity,
+            descn AS description, listprice,
+            unitcost,supplier, status,
+            attr1, attr2, attr3, attr4, attr5
+        FROM item
+        NATURAL JOIN inventory
+        JOIN product ON item.productid = product.productid
+        WHERE name like '%${name}%'`
+        const [results] = await connection.execute(query);
+        connection.end();
+
+        return NextResponse.json(results);
+    } catch (error) {
+        const response = {
+            error: (error as Error).message,
+            returnedStatus: 200,
+        }
+        return NextResponse.json(response, { status: 200 });
+    }
+}
+
+export async function getItemByCat(category: string) {
+    try { 
+        const connection = await mysql.createConnection(connectionParams);
+        const query =
+        `SELECT
+            itemid, name AS productName,
+            item.productid, qty AS quantity,
+            descn AS description, listprice,
+            unitcost,supplier, status,
+            attr1, attr2, attr3, attr4, attr5
+        FROM item
+        NATURAL JOIN inventory
+        JOIN product ON item.productid = product.productid
+        WHERE product.category = '${category}'`
         const [results] = await connection.execute(query);
         connection.end();
 
