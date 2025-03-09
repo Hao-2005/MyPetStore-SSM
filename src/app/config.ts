@@ -64,3 +64,55 @@ export type Item = {
     attr4: string,
     attr5: string,
 }
+
+export type UserVo = {
+    userId: string,
+    password: string,
+    userEmail: string,
+    firstName: string,
+    lastName: string,
+    status: string,
+    address1: string,
+    address2: string,
+    city: string,
+    state: string,
+    zip: string,
+    country: string,
+    phone: string,
+}
+
+export type Bought = {
+    productId: string,
+    categoryId: string,
+    name: string,
+    description: string,
+}
+
+export type CanceledOrder = {
+    orderId: string,
+    userId: string,
+    orderDate: string,
+    shipAddress1: string,
+    shipAddress2: string,
+    shipCity: string,
+    shipState: string,
+    shipZip: string,
+    shipCountry: string,
+    billAddress1: string,
+    billAddress2: string,
+    billState: string,
+    billZip: string,
+    billCountry: string,
+    courier: string,
+    totalPrice: number,
+    billToFirstName: string,
+    billToLastName: string,
+    shipToFirstName: string,
+    shipToLastName: string,
+    creditCard: string,
+    expiryDate: string,
+    cardType: string,
+    locale: string,
+    status: string,
+    lineItems: [LineItem],
+}

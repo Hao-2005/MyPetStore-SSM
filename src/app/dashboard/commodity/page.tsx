@@ -8,12 +8,152 @@ import { Tinos } from "next/font/google";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from '@/components/ui/input';
+
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+    getPaginationRowModel,
+} from "@tanstack/react-table"
+ 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+export const columns: ColumnDef<Item>[] = [
+    {
+        accessorKey: "itemid",
+        header: "Item ID",
+        cell: ({ row }) => {
+            return (
+                <Link className="text-sky-500 underline" href={`/dashboard/commodity/${row.original.itemid}`}>
+                    {row.original.itemid}
+                </Link>
+            )
+        },
+    },
+    {
+        accessorKey: "productName",
+        header: "Name",
+    },
+    {
+        accessorKey: "productid",
+        header: "Product ID",
+    },
+    {
+        accessorKey: "quantity",
+        header: "Quantity",
+    },
+    {
+        accessorKey: "listprice",
+        header: "Price",
+    },
+    {
+        accessorKey: "supplier",
+        header: "Supplier",
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
+    },
+    {
+        accessorKey: "attr1",
+        header: "Attribute",
+    }
+]
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+}
+
+function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const table = useReactTable({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+  })
+ 
+  return (
+    <div className="rounded-md border p-4 bg-stone-200">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                )
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+          </Table>
+          <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  )
+}
 
 const tinos = Tinos({
     subsets: ['latin'],
@@ -38,6 +178,7 @@ type Item = {
 }
 export default function Commodity() {
     const [data, setData] = useState<Item[]>([]);
+    const [option, setOption] = useState('All');
     const rounter = useRouter();
     useEffect(() => {
         async function fetchData() {
@@ -73,6 +214,7 @@ export default function Commodity() {
                     onClick={async () => {
                         fetch('/api/items').then((res) => res.json()).then((data) => {
                             setData(data);
+                            setOption('All');
                         });
                     }}
                     className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>All
@@ -81,6 +223,7 @@ export default function Commodity() {
                     onClick={async () => {
                         fetch('/api/items/cat/birds').then((res) => res.json()).then((data) => {
                             setData(data);
+                            setOption('Birds');
                         });
                     }}
                     className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Birds</p>
@@ -88,6 +231,7 @@ export default function Commodity() {
                     onClick={async () => {
                         fetch('/api/items/cat/fish').then((res) => res.json()).then((data) => {
                             setData(data);
+                            setOption('Fish');
                         });
                     }}
                     className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Fish</p>
@@ -95,6 +239,7 @@ export default function Commodity() {
                     onClick={async () => {
                         fetch('/api/items/cat/dogs').then((res) => res.json()).then((data) => {
                             setData(data);
+                            setOption('Dogs');
                         });
                     }}
                     className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Dogs</p>
@@ -102,6 +247,7 @@ export default function Commodity() {
                     onClick={async () => {
                         fetch('/api/items/cat/cats').then((res) => res.json()).then((data) => {
                             setData(data);
+                            setOption('Cats');
                         });
                     }}
                     className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Cats</p>
@@ -109,49 +255,19 @@ export default function Commodity() {
                     onClick={async () => {
                         fetch('/api/items/cat/reptiles').then((res) => res.json()).then((data) => {
                             setData(data);
+                            setOption('Reptiles');
                         });
                     }}
                     className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Reptiles</p>
 
             </div>
             <div className="flex-1 max-h-full overflow-y-auto">
-                <table>
-                    <thead className="sticky top-0 z-10 bg-black text-white">
-                        <tr>
-                            <th className="w-[150px] p-2">Item ID</th>
-                            <th className="w-[150px]">Name</th>
-                            <th className="w-[150px]">Product ID</th>
-                            <th className="w-[150px]">Quantity</th>
-                            <th className="w-[150px]">Price</th>
-                            <th className="w-[150px]">Supplier</th>
-                            <th className="w-[150px]">Status</th>
-                            <th className="w-[150px]">Attribute</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-slate-200">
-                        {data.map((item:Item, index:number) => (
-                            <tr  key={item.itemid}
-                                >
-                                {/* <td className="p-2 hover:underline cursor-pointer text-center"
-                                    onClick={() => { rounter.push(`/dashboard/commodity/${item.itemid}`) }}>
-                                    {item.itemid}</td> */}
-                                <td className="hover:underline cursor-pointer">
-                                    <Link href={{
-                                        pathname: `/dashboard/commodity/${item.itemid}`,
-                                    }}>{ item.itemid }</Link>
-                                </td>
-                                <td className="p-4 text-center">{item.productName}</td>
-                                <td className="text-center">{item.productid}</td>
-                                <td className="text-center">{item.quantity}</td>
-                                <td className="text-center">{item.listprice}</td>
-                                <td className="text-center">{item.supplier}</td>
-                                <td className="text-center">{item.status}</td>
-                                <td className="text-center">{item.attr1}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <h1 style={{
+                    fontFamily: 'Tinos',
+                    fontSize: '2rem',
+                    textAlign: 'center',
+                }}>{ option}</h1>
+                <DataTable columns={columns} data={data}></DataTable>
             </div>
     </div>
     )
