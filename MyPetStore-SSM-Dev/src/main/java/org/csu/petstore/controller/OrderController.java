@@ -245,7 +245,7 @@ public class OrderController {
         String imagePath = null;
         if (!image.isEmpty()) {
             try {
-                String uploadDir = System.getProperty("user.dir") + "/../Images/";
+                String uploadDir = System.getProperty("user.dir") + "/upload/images/";
                 System.out.println(uploadDir);
                 File dir = new File(uploadDir);
                 if (!dir.exists()) {
