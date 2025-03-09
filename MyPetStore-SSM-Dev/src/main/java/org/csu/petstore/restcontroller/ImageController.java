@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -22,11 +23,11 @@ public class ImageController {
 
     private static final String UPLOAD_DIR = "upload/images/";
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(
+    public ResponseEntity<Map<String, String>> uploadImage(
             @RequestParam("image")MultipartFile file
     ) {
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("请选择要上传的图片文件");
+            return ResponseEntity.badRequest().body(Map.of("msg", "没有图片"));
         }
 
         try {
@@ -41,10 +42,10 @@ public class ImageController {
             Path path = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
             Files.write(path, bytes);
 
-            return ResponseEntity.ok("文件上传成功");
+            return ResponseEntity.ok(Map.of("url", "/images/"+ file.getOriginalFilename()));
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("文件上传失败");
+            return ResponseEntity.badRequest().body(Map.of("msg", "上传失败"));
         }
     }
 }
