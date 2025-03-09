@@ -47,3 +47,19 @@ export type LineItem = {
     quantity: number,
     unitPrice: number
 }
+
+export type Item = {
+    itemid: string,
+    productName: string,
+    productid: string,
+    quantity: number,
+    description: string,
+    listprice: number,
+    supplier: number,
+    status: string,
+    attr1: string,
+    attr2: string,
+    attr3: string,
+    attr4: string,
+    attr5: string,
+}

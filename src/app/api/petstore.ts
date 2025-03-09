@@ -51,7 +51,7 @@ export async function getItemById(id: string) {
         FROM item
         NATURAL JOIN inventory
         JOIN product ON item.productid = product.productid
-        WHERE itemid = ${id}`
+        WHERE itemid = '${id}'`
         const [results] = await connection.execute(query);
         connection.end();
 
