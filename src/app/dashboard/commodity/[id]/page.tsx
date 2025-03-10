@@ -5,9 +5,9 @@ import { springBoot, type Item as ItemType } from '@/app/config'
 import { Button, Card } from '@mui/material';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import ImgUpload from '@/app/imageUpload/page';
+import ImgUpload from '@/components/page';
 
-export function parseDescription(raw: string) {
+function parseDescription(raw: string) {
     return {
         image: raw.match(/<image\s+src="(.*?)"/)?.[1] || '',
         text: raw.split('>')[1]?.trim() || ''

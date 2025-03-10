@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-export const columns: ColumnDef<Item>[] = [
+const columns: ColumnDef<Item>[] = [
     {
         accessorKey: "itemid",
         header: "Item ID",
@@ -217,7 +217,8 @@ export default function Commodity() {
                             setOption('All');
                         });
                     }}
-                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>All
+                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}
+                    style={{ textDecoration: option === 'All' ? 'underline' : 'none' }}>All
                 </p>
                 <p
                     onClick={async () => {
@@ -226,7 +227,8 @@ export default function Commodity() {
                             setOption('Birds');
                         });
                     }}
-                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Birds</p>
+                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}
+                    style={{ textDecoration: option === 'Birds' ? 'underline' : 'none' }}>Birds</p>
                 <p  
                     onClick={async () => {
                         fetch('/api/items/cat/fish').then((res) => res.json()).then((data) => {
@@ -234,7 +236,8 @@ export default function Commodity() {
                             setOption('Fish');
                         });
                     }}
-                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Fish</p>
+                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}
+                    style={{ textDecoration: option === 'Fish' ? 'underline' : 'none' }}>Fish</p>
                 <p
                     onClick={async () => {
                         fetch('/api/items/cat/dogs').then((res) => res.json()).then((data) => {
@@ -242,7 +245,8 @@ export default function Commodity() {
                             setOption('Dogs');
                         });
                     }}
-                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Dogs</p>
+                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}
+                    style={{ textDecoration: option === 'Dogs' ? 'underline' : 'none' }}>Dogs</p>
                 <p
                     onClick={async () => {
                         fetch('/api/items/cat/cats').then((res) => res.json()).then((data) => {
@@ -250,7 +254,8 @@ export default function Commodity() {
                             setOption('Cats');
                         });
                     }}
-                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Cats</p>
+                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}
+                    style={{ textDecoration: option === 'Cats' ? 'underline' : 'none' }}>Cats</p>
                 <p
                     onClick={async () => {
                         fetch('/api/items/cat/reptiles').then((res) => res.json()).then((data) => {
@@ -258,7 +263,8 @@ export default function Commodity() {
                             setOption('Reptiles');
                         });
                     }}
-                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}>Reptiles</p>
+                    className={`${tinos.className} text-3xl hover:underline cursor-pointer`}
+                    style={{ textDecoration: option === 'Reptiles' ? 'underline' : 'none' }}>Reptiles</p>
 
             </div>
             <div className="flex-1 max-h-full overflow-y-auto">

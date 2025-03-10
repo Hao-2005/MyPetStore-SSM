@@ -4,6 +4,7 @@ import { OrderVo, springBoot } from "@/app/config"
 import { Button } from "@/components/ui/button"
 
 import {
+    Row,
     ColumnDef,
     flexRender,
     getCoreRowModel,
@@ -19,25 +20,55 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Link from "next/link"
 
-export const columns: ColumnDef<OrderVo>[] = [
+export default function Orders() {
+    const [orders, setOrders] = useState<OrderVo[]>([]);
+    const [option, setOption] = useState("All");
+    const columns: ColumnDef<OrderVo>[] = [
+  {
+    accessorKey: "orderId",
+    header: "Order ID",
+  },
+  {
+    accessorKey: "orderDate",
+    header: "Order Date",
+  },
+  {
+    accessorKey: "userId",
+    header: "User ID",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+      },
+  //如果是待处理，则显示处理按钮
+  ...(option === 'Pending' ? [
     {
-        accessorKey: "orderId",
-        header: "Order ID",
-    },
-    {
-        accessorKey: "orderDate",
-        header: "Order Date",
-    },
-    {
-        accessorKey: "userId",
-        header: "User ID",
-    },
-    {
-        accessorKey: "status",
-        header: "Status",
+      id: "action",
+      header: "Action",
+      cell: ({ row }: {row:Row<OrderVo>}) => (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const confirm = window.confirm(`确认处理订单吗？${row.original.orderId}`);
+                          if (confirm) {
+                            fetch(`${springBoot}/order/handle/${row.original.orderId}`);
+                            fetch(`${springBoot}/order/pending`)
+                              .then(resp => resp.json())
+                              .then(nextData => {
+                                setOrders(nextData);
+                              })
+                          }
+                        }}
+                    >
+                        处理
+                    </Button>
+      ),
     }
-]
+  ] : [])
+];
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -120,10 +151,6 @@ function DataTable<TData, TValue>({
     </div>
   )
 }
-
-export default function Orders() {
-    const [orders, setOrders] = useState<OrderVo[]>([]);
-    const [option, setOption] = useState("All");
     useEffect(() => {
         async function fetchOrders() {
             const resp = await fetch(`${springBoot}/order/all`);

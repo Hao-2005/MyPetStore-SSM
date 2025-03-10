@@ -10,36 +10,6 @@ export type ReturnOrder = {
     status: string,
 }
 
-export type OrderVo = {
-    orderId: number,
-    userId: string,
-    orderDate: string,
-    shipAddress1: string,
-    shipAddress2: string,
-    shipCity: string,
-    shipState: string,
-    shipZip: string,
-    shipCountry: string,
-    billAddress1: string,
-    billAddress2: string,
-    billCity: string,
-    billState: string,
-    billZip: string,
-    billCountry: string,
-    courier: string,
-    totalPrice: number,
-    billToFirstName: string,
-    billToLastName: string,
-    shipToFirstName: string,
-    shipToLastName: string,
-    creditCard: string,
-    expiryDate: string,
-    cardType: string,
-    locale: string,
-    status: string,
-    lineItems: [LineItem]
-}
-
 export type LineItem = {
     orderId: number,
     lineNumber: number,
@@ -88,7 +58,13 @@ export type Bought = {
     description: string,
 }
 
-export type CanceledOrder = {
+export type Interest = {
+    userId: string,
+    productId: string,
+    viewCount: number,
+}
+
+export type OrderVo = {
     orderId: string,
     userId: string,
     orderDate: string,

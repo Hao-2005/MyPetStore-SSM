@@ -52,7 +52,7 @@ export default function Cancellations() {
 
 
     return (
-        <Table isStriped isHeaderSticky>
+        <Table className="bg-zinc-200 rounded-md border-2">
                 <TableHeader>
                     <TableColumn>Order ID</TableColumn>
                     <TableColumn>Order Date</TableColumn>

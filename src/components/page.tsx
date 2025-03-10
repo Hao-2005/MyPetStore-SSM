@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from "react"
-import { springBoot } from "../config";
+import { springBoot } from "../app/config";
 
 export default function ImgUpload({ image, productId }: { image: string, productId: string }) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
