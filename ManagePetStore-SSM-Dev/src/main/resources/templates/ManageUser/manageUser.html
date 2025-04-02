@@ -6,22 +6,174 @@
     <link rel="stylesheet" th:href="@{/css/manageUser.css}">
 </head>
 <body>
-    <h2>用户列表</h2>
-    <table>
-        <tr>
-            <th>用户ID</th>
-            <th>密码</th>
-            <th>邮箱</th>
-        </tr>
-        <tr th:each="m:${user}">
-            <td th:text="${m.userId}"></td>
-            <td th:text="${m.password}"></td>
-            <td th:text="${m.userEmail}"></td>
-        </tr>
-    </table>
-    <br/>
-    <a href="../manageUser/resetPassword">重置密码</a>
-    <a href="../manageUser/userInfo">查看用户详情</a>
-    <a href="/">返回首页</a>
+    <div class="container">
+        <h2>用户管理系统</h2>
+        <div class="nav-links">
+            <a href="/" class="back-link">返回首页</a>
+            <button onclick="showResetPassword()" class="nav-btn">重置密码</button>
+            <button onclick="showUserList()" class="nav-btn">用户列表</button>
+        </div>
+
+        <!-- 用户列表内容 -->
+        <div id="userListContent" class="content-section">
+            <table>
+                <tr>
+                    <th>用户ID</th>
+                    <th>密码</th>
+                    <th>邮箱</th>
+                </tr>
+                <tr th:each="m:${user}" th:data-userid="${m.userId}" class="clickable-row">
+                    <td th:text="${m.userId}"></td>
+                    <td th:text="${m.password}"></td>
+                    <td th:text="${m.userEmail}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 重置密码内容 -->
+        <div id="resetPasswordContent" class="content-section" style="display: none;">
+            <table>
+                <tr>
+                    <th>用户ID</th>
+                    <th>操作</th>
+                </tr>
+                <tr th:each="m:${resetUsers}">
+                    <td th:text="${m}"></td>
+                    <td>
+                        <button onclick="resetPassword(this.getAttribute('data-userid'))" th:data-userid="${m}">
+                            重置为默认密码
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 用户详情内容 -->
+        <div id="userDetailContent" class="content-section" style="display: none;">
+            <h3>用户ID: <span th:text="${userId}"></span></h3>
+            <hr/>
+            
+            <h3>购买的商品:</h3>
+            <table>
+                <tr>
+                    <th>商品ID</th>
+                    <th>商品名称</th>
+                    <th>商品描述</th>
+                </tr>
+                <tr th:each="p:${bought}">
+                    <td th:text="${p.getProductId()}"></td>
+                    <td th:text="${p.getName()}"></td>
+                    <td th:text="${p.getDescription()}"></td>
+                </tr>
+            </table>
+            
+            <h3>感兴趣的商品:</h3>
+            <table>
+                <tr>
+                    <th>商品ID</th>
+                    <th>浏览次数</th>
+                </tr>
+                <tr th:each="i:${interest}">
+                    <td th:text="${i.getProductId()}"></td>
+                    <td th:text="${i.getViewCount()}"></td>
+                </tr>
+            </table>
+            
+            <h3>待取消订单:</h3>
+            <table>
+                <tr>
+                    <th>订单ID</th>
+                    <th>订单日期</th>
+                </tr>
+                <tr th:each="cg:${cancelingOrder}">
+                    <td th:text="${cg.getOrderId()}"></td>
+                    <td th:text="${cg.getOrderDate()}"></td>
+                </tr>
+            </table>
+            
+            <h3>已取消订单:</h3>
+            <table>
+                <tr>
+                    <th>订单ID</th>
+                    <th>订单日期</th>
+                </tr>
+                <tr th:each="cd:${canceledOrder}">
+                    <td th:text="${cd.getOrderId()}"></td>
+                    <td th:text="${cd.getOrderDate()}"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 用户列表行点击事件
+        bindClickableRows();
+    });
+
+    function bindClickableRows() {
+        const rows = document.querySelectorAll('.clickable-row');
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                const userId = this.getAttribute('data-userid');
+                showUserDetail(userId);
+            });
+        });
+    }
+
+    function showUserList() {
+        hideAllSections();
+        document.getElementById('userListContent').style.display = 'block';
+    }
+
+    function showResetPassword() {
+        fetch('/manageUser/resetPassword/list')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const content = doc.querySelector('#resetPasswordContent');
+                if (content) {
+                    document.getElementById('resetPasswordContent').innerHTML = content.innerHTML;
+                    hideAllSections();
+                    document.getElementById('resetPasswordContent').style.display = 'block';
+                }
+            });
+    }
+
+    function showUserDetail(userId) {
+        fetch(`/manageUser/userInfo/detail?userId=${userId}`)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const content = doc.querySelector('#userDetailContent');
+                if (content) {
+                    document.getElementById('userDetailContent').innerHTML = content.innerHTML;
+                    hideAllSections();
+                    document.getElementById('userDetailContent').style.display = 'block';
+                }
+            });
+    }
+
+    function resetPassword(userId) {
+        fetch(`/manageUser/resetPassword/reset?userId=${userId}`)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const content = doc.querySelector('#resetPasswordContent');
+                if (content) {
+                    document.getElementById('resetPasswordContent').innerHTML = content.innerHTML;
+                }
+            });
+    }
+
+    function hideAllSections() {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.style.display = 'none';
+        });
+    }
+</script>
 </body>
 </html>

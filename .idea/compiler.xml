@@ -9,14 +9,18 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
-        <module name="ManagePetStore-SSM-Dev" />
         <module name="MyPetStore-SSM-Dev" />
+        <module name="ManagePetStore-SSM-Dev (1)" />
+        <module name="ManagePetStore-SSM-Dev" />
+        <module name="ManagePetStore-SSM-Dev (2)" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="ManagePetStore-SSM-Dev" options="-parameters" />
+      <module name="ManagePetStore-SSM-Dev (1)" options="-parameters" />
+      <module name="ManagePetStore-SSM-Dev (2)" options="-parameters" />
       <module name="MyPetStore-SSM-Dev" options="-parameters" />
     </option>
   </component>

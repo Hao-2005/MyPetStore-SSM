@@ -24,45 +24,39 @@ public class UserManageController {
     @Autowired
     OrderService orderService;
 
+   
     @GetMapping("/manageUser")
     public String manageUser(Model model) {
-
-        model.addAttribute("user",accountService.getAllUser());
+        model.addAttribute("user", accountService.getAllUser());
         return "ManageUser/manageUser";
     }
 
-    @GetMapping("/manageUser/resetPassword")
-    public String resetPassword(Model model){
-        model.addAttribute("user",resetPasswordService.getResetPasswordUserId());
-        return "ManageUser/resetPassword";
+    @GetMapping("/manageUser/resetPassword/list")
+    public String getResetPasswordList(Model model) {
+        model.addAttribute("resetUsers", resetPasswordService.getResetPasswordUserId());
+        return "ManageUser/manageUser :: #resetPasswordContent";
     }
 
     @GetMapping("/manageUser/resetPassword/reset")
-    public String doResetPassword(@RequestParam("userId") String userId, Model model){
-        if(userId == null){
-            return "redirect:/manageUser/resetPassword";
+    public String doResetPassword(@RequestParam("userId") String userId, Model model) {
+        if(userId == null) {
+            return "redirect:/manageUser";
         }
         resetPasswordService.resetDefaultPassword(userId);
-        model.addAttribute("user",resetPasswordService.getResetPasswordUserId());
-        return "ManageUser/resetPassword";
+        model.addAttribute("resetUsers", resetPasswordService.getResetPasswordUserId());
+        return "ManageUser/manageUser :: #resetPasswordContent";
     }
 
-    @GetMapping("/manageUser/userInfo")
-    public String userInfo(Model model){
-        model.addAttribute("user",accountService.getAllUser());
-        return "ManageUser/userInfo";
-    }
-
-    @GetMapping("/manageUser/userInfo/seeInfo")
-    public String seeInfo(@RequestParam("userId") String userId,Model model){
-        if(userId == null){
-            return "redirect:/manageUser/userInfo";
+    @GetMapping("/manageUser/userInfo/detail")
+    public String getUserDetail(@RequestParam("userId") String userId, Model model) {
+        if(userId == null) {
+            return "redirect:/manageUser";
         }
-        model.addAttribute("user",userId);
-        model.addAttribute("bought",productService.getUserBoughtProduct(userId));
-        model.addAttribute("interest",productJournalService.getThreeMostViewProducts(userId));
-        model.addAttribute("cancelingOrder",orderService.getUserCancelingOrders(userId));
-        model.addAttribute("canceledOrder",orderService.getUserCanceledOrders(userId));
-        return "ManageUser/seeUserInfo";
+        model.addAttribute("userId", userId);
+        model.addAttribute("bought", productService.getUserBoughtProduct(userId));
+        model.addAttribute("interest", productJournalService.getThreeMostViewProducts(userId));
+        model.addAttribute("cancelingOrder", orderService.getUserCancelingOrders(userId));
+        model.addAttribute("canceledOrder", orderService.getUserCanceledOrders(userId));
+        return "ManageUser/manageUser :: #userDetailContent";
     }
 }
