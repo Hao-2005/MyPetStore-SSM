@@ -59,8 +59,8 @@ public class OrderController {
 
     @RequestMapping("/viewNewOrder")
     public String viewNewOrder(@ModelAttribute("loginAccount") AccountVO loginAccount,
-                               @ModelAttribute("cart") CartVO cart,
                                Model model) {
+        CartVO cart = userService.getCart(loginAccount.getUsername());
         if(loginAccount == null) {
             return "/account/login";
         }else{
@@ -68,11 +68,13 @@ public class OrderController {
             String isModifying = orderService.checkModifying(cart);
             if(isModifying != null){
                 model.addAttribute("viewNewOrderMsg",isModifying+" information is being modified, order cannot be placed！");
+                model.addAttribute("cart",cart);
                 return "cart/cart";
             }
             String isQuantity = orderService.checkItemQuantity(cart);
             if(isQuantity != null){
                 model.addAttribute("viewNewOrderMsg",isQuantity+" not enough stock to place an order！");
+                model.addAttribute("cart",cart);
                 return "cart/cart";
             }
             CartVO cartVO = userService.getCart(loginAccount.getUsername());
@@ -245,7 +247,7 @@ public class OrderController {
         String imagePath = null;
         if (!image.isEmpty()) {
             try {
-                String uploadDir = System.getProperty("user.dir") + "/upload/images/";
+                String uploadDir = System.getProperty("user.dir") + "/../Images/";
                 System.out.println(uploadDir);
                 File dir = new File(uploadDir);
                 if (!dir.exists()) {

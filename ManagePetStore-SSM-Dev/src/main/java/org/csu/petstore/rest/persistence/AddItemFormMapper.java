@@ -10,7 +10,8 @@ public interface AddItemFormMapper {
     @Insert(
             """
             INSERT INTO  item 
-            (itemid, productid, listprice, unitcost, supplier, status, attr1, attr2, attr3, attr4, attr5)
+            (itemid, productid, listprice, unitcost, supplier, attr1)
+            VALUES (#{itemid}, #{productid}, #{listprice}, #{unitcost}, #{supplier}, #{attr1})
             """)
     int insertItem(AddItemForm addItemForm);
 
@@ -26,7 +27,8 @@ public interface AddItemFormMapper {
     @Insert(
             """
             INSERT INTO  product 
-            (productid, category, name, descn)
+            (productid, category, name)
+            VALUES (#{productid}, #{category}, #{name})
             """)
     int insertProduct(AddItemForm addItemForm);
 }

@@ -132,10 +132,18 @@ public class UserController {
         else
         {
             System.out.println(signon.getUsername());
-            ResetPassword resetPassword = new ResetPassword();
-            resetPassword.setUserId(userId);
-            resetPassword.setStatus(0);
-            userService.addResetPassword(resetPassword);
+            ResetPassword check = userService.getResetPasswordByUserId(userId);
+            if(check == null) {
+                ResetPassword resetPassword = new ResetPassword();
+                resetPassword.setUserId(userId);
+                resetPassword.setStatus(0);
+                userService.addResetPassword(resetPassword);
+            }
+            else
+            {
+                check.setStatus(0);
+                userService.updateResetPassword(check);
+            }
 
             //返回注册页面并显示成功消息
             resetMessage = "You have submitted a password reset request. Please wait for the administrator's review.";

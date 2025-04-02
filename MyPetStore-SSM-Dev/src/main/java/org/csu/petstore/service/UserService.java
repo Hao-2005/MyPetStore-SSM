@@ -47,5 +47,7 @@ public interface UserService {
     public List<Journal> getAllJournals(String username);
     public void updateAccount(AccountVO accountVO);
     public void addResetPassword(ResetPassword resetPassword);
+    public ResetPassword getResetPasswordByUserId(String userId);
     public void addViewProduct(String productId, String username);
+    public void updateResetPassword(ResetPassword resetPassword);
 }

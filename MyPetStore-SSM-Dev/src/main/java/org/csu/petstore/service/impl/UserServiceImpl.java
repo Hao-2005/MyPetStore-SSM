@@ -263,6 +263,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResetPassword getResetPasswordByUserId(String userId) {
+        ResetPassword check = resetPasswordMapper.selectById(userId);
+        return check;
+    }
+
+    @Override
     public void addViewProduct(String productId, String username)
     {
         System.out.println(productId);
@@ -294,5 +300,10 @@ public class UserServiceImpl implements UserService {
             productJournal.setProductId(productId);
             productJournalMapper.insert(productJournal);
         }
+    }
+
+    @Override
+    public void updateResetPassword(ResetPassword resetPassword) {
+        resetPasswordMapper.updateById(resetPassword);
     }
 }

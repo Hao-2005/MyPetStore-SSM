@@ -3,6 +3,7 @@ package org.csu.petstore.rest.restcontroller;
 import org.csu.petstore.rest.entity.AddItemForm;
 import org.csu.petstore.rest.service.AddItemFormService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,19 +19,19 @@ public class AddItemFormController {
         this.addItemFormService = addItemFormService;
     }
 
-    @RequestMapping("/insertItem")
+    @PostMapping("/insertItem")
     public int insertItem(
             @RequestBody AddItemForm addItemForm) {
         return addItemFormService.insertItem(addItemForm);
     }
 
-    @RequestMapping("/insertInventory")
+    @PostMapping("/insertInventory")
     public int insertInventory(
             @RequestBody AddItemForm addItemForm) {
         return addItemFormService.insertInventory(addItemForm);
     }
 
-    @RequestMapping("/insertProduct")
+    @PostMapping("/insertProduct")
     public int insertProduct(
             @RequestBody AddItemForm addItemForm) {
         return addItemFormService.insertProduct(addItemForm);
