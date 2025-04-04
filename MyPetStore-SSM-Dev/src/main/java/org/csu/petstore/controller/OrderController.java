@@ -1,6 +1,9 @@
 package org.csu.petstore.controller;
 
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.server.PathParam;
+import org.csu.petstore.common.CommonResponse;
 import org.csu.petstore.entity.OrderStatus;
 import org.csu.petstore.entity.UserAddress;
 import org.csu.petstore.service.OrderService;
@@ -21,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping("/order")
 @SessionAttributes(value = {"productList","order","shippingAddressRequired","loginAccount","addresses","confirmed"})
 public class OrderController {
     private boolean shippingAddressRequiredBool;
@@ -35,99 +37,76 @@ public class OrderController {
     @Autowired
     private ServletContext servletContext;
 
-    @RequestMapping("/listOrder")
-    public String listOrders(Model model) {
-        AccountVO loginAccount =(AccountVO) model.asMap().get("loginAccount");
-        List<OrderVO> orderVOList = orderService.getOrdersByUsername(loginAccount.getUsername());
-        model.addAttribute("orderList", orderVOList);
-        return "order/listOrder";
-    }
-
-    @RequestMapping("/viewOrder")
-    public String viewOrder(@RequestParam(defaultValue  = "-1") int orderId,
-                            Model model) {
-        if(orderId != -1) {
-            AccountVO loginAccount =(AccountVO) model.asMap().get("loginAccount");
-            OrderVO orderVO = orderService.getOrderWithLineItem(orderId);
-            model.addAttribute("order", orderVO);
-            return "order/viewOrder";
-        }else{
-            return "order/listOrder";
+    @GetMapping("/orders")
+    @ResponseBody
+    public CommonResponse<Object> orders(HttpSession session) {
+        AccountVO loginAccount = (AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }else {
+            List<OrderVO> orderVOList = orderService.getOrdersByUsername(loginAccount.getUsername());
+            return CommonResponse.createForSuccess(orderVOList);
         }
-
     }
 
-    @RequestMapping("/viewNewOrder")
-    public String viewNewOrder(@ModelAttribute("loginAccount") AccountVO loginAccount,
-                               Model model) {
-        CartVO cart = userService.getCart(loginAccount.getUsername());
-        if(loginAccount == null) {
-            return "/account/login";
-        }else{
+    @GetMapping("/orders/{orderId}")
+    @ResponseBody
+    public CommonResponse<Object> viewOrder(@PathVariable int orderId,
+                            HttpSession session) {
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }
+        OrderVO orderVO = orderService.getOrderWithLineItem(orderId);
+        return CommonResponse.createForSuccess(orderVO);
+    }
+
+    @GetMapping("/carts/orders")
+    @ResponseBody
+    public CommonResponse<Object> viewNewOrder(HttpSession session) {
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }else {
+            CartVO cart = userService.getCart(loginAccount.getUsername());
             OrderVO orderVO = new OrderVO();
             String isModifying = orderService.checkModifying(cart);
-            if(isModifying != null){
-                model.addAttribute("viewNewOrderMsg",isModifying+" information is being modified, order cannot be placed！");
-                model.addAttribute("cart",cart);
-                return "cart/cart";
+            if (isModifying != null) {
+                return CommonResponse.createForError(2,isModifying + " information is being modified, order cannot be placed！");
             }
             String isQuantity = orderService.checkItemQuantity(cart);
-            if(isQuantity != null){
-                model.addAttribute("viewNewOrderMsg",isQuantity+" not enough stock to place an order！");
-                model.addAttribute("cart",cart);
-                return "cart/cart";
+            if (isQuantity != null) {
+                return CommonResponse.createForError(3,isQuantity + " not enough stock to place an order！");
             }
-            CartVO cartVO = userService.getCart(loginAccount.getUsername());
-            orderVO.initOrder(loginAccount, cartVO);
-            model.addAttribute("order", orderVO);
-            List<UserAddress> userAddressList = userService.getUserOKAddressByUsername(loginAccount.getUsername());
-            model.addAttribute("addresses", userAddressList);
-            return "order/newOrder";
+            orderVO.initOrder(loginAccount, cart);
+            session.setAttribute("order", orderVO);
+            return CommonResponse.createForSuccess(orderVO);
         }
     }
 
-    @RequestMapping("/newOrder")
-    public String newOrder(@ModelAttribute("loginAccount") AccountVO loginAccount,
-                           @ModelAttribute("cart") CartVO cart,
-                           @ModelAttribute("order") OrderVO order,
-                           @RequestParam(required = false,value = "order.shippingAddress1") String shippingAddress1,
-                           @RequestParam(required = false,value = "order.shippingAddress2") String shippingAddress2,
-                           @RequestParam(required = false,value = "order.shippingCity") String shippingCity,
-                           @RequestParam(required = false,value = "order.shippingState") String shippingState,
-                           @RequestParam(required = false,value = "order.shipZip") String shipZip,
-                           @RequestParam(required = false,value = "order.shipCountry") String shipCountry,
-                           @RequestParam(required = false,value = "order.shipToFirstName") String shipToFirstName,
-                           @RequestParam(required = false,value = "order.shipToLastName") String shipToLastName,
-                           @RequestParam(required = false,value = "order.billAddress1") String billAddress1,
-                           @RequestParam(required = false,value = "order.billAddress2") String billAddress2,
-                           @RequestParam(required = false,value = "order.billCity") String billCity,
-                           @RequestParam(required = false,value = "order.billState") String billState,
-                           @RequestParam(required = false,value = "order.billZip") String billZip,
-                           @RequestParam(required = false,value = "order.billCountry") String billCountry,
-                           @RequestParam(required = false,value = "order.billToFirstName") String billToFirstName,
-                           @RequestParam(required = false,value = "order.billToLastName") String billToLastName,
-                           @RequestParam(required = false,value = "order.cardType") String cardType,
-                           @RequestParam(required = false,value = "order.creditCard") String creditCard,
-                           @RequestParam(required = false,value = "order.expiryDate") String expiryDate,
-                           @RequestParam(required = false,value = "shippingAddressRequired") String shippingAddressRequired,
-                           @RequestParam(required = false,value = "shipAddressSubmitted") String shipAddressSubmitted,
-                           @RequestParam(required = false,value = "confirmed") String confirmed,
-                           Model model) {
-        shippingAddressRequiredBool =(shipAddressSubmitted!=null);
-        if (shipAddressSubmitted != null) {
-            shipAddressSubmittedBool =(shipAddressSubmitted.equals("true"));
-        }else{
-            shipAddressSubmittedBool = false;
-        }
-        confirmedBool = (confirmed!=null);
 
-        if(shippingAddressRequiredBool){
-            model.addAttribute("shippingAddressRequired", shippingAddressRequired);
-            shippingAddressRequiredBool = false;
-            return "order/shipAddress";
-        }else if(shipAddressSubmittedBool){
-            shipAddressSubmittedBool = false;
+    @PutMapping("/orders/addresses")
+    @ResponseBody
+    public CommonResponse<Object> getAddresses(HttpSession session,
+                                               @RequestParam(required = false,value = "order.shippingAddress1") String shippingAddress1,
+                                               @RequestParam(required = false,value = "order.shippingAddress2") String shippingAddress2,
+                                               @RequestParam(required = false,value = "order.shippingCity") String shippingCity,
+                                               @RequestParam(required = false,value = "order.shippingState") String shippingState,
+                                               @RequestParam(required = false,value = "order.shipZip") String shipZip,
+                                               @RequestParam(required = false,value = "order.shipCountry") String shipCountry,
+                                               @RequestParam(required = false,value = "order.shipToFirstName") String shipToFirstName,
+                                               @RequestParam(required = false,value = "order.shipToLastName") String shipToLastName) {
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }else {
+            OrderVO order = (OrderVO) session.getAttribute("order");
             UserAddress userAddress = new UserAddress();
+            System.out.println("shippingAddress1:"+shippingAddress1);
+            System.out.println("shippingAddress2:"+shippingAddress2);
+            System.out.println("shippingCity:"+shippingCity);
+            System.out.println("shippingState:"+shippingState);
+            System.out.println("shipZip:"+shipZip);
             order.setShipAddress1(shippingAddress1);
             order.setShipAddress2(shippingAddress2);
             order.setShipCity(shippingCity);
@@ -147,29 +126,29 @@ public class OrderController {
             userAddress.setLastName(shipToLastName);
             userAddress.setStatus("OK");
             userService.addUserAddress(userAddress);
-            model.addAttribute("order", order);
-            return "order/confirmOrder";
-        }else if(confirmedBool){
-            model.addAttribute("confirmed", confirmed);
-            Date date = new Date();
-            order.setOrderDate(date);
-            System.out.println(date);
-            order.setOrderId(orderService.getNextOrderId());
-            orderService.decreaseItemQuantity(order);
-            orderService.insertOrder(order);
-            model.addAttribute("cart", null);
-            userService.deleteCart(loginAccount.getUsername());
+            return CommonResponse.createForSuccess(order);
+        }
+    }
 
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            String currentDate = formatter.format(date);
-            String addOrderString = "User "+ loginAccount.getUsername() + " added a new order "
-                    + "<a href= \"viewOrder?orderId=" + order.getOrderId() + "\">"
-                    + order.getOrderId() + "</a >.";
-            userService.updateJournal(loginAccount.getUsername(), addOrderString, currentDate, "#ED7D31");
-
-            return "order/viewOrder";
-        }else{
-            newOrderFormSubmited = false;
+    @PutMapping("/orders")
+    @ResponseBody
+    public CommonResponse<Object> addNewOrder(HttpSession session,
+                                              @RequestParam(required = false,value = "order.billAddress1") String billAddress1,
+                                              @RequestParam(required = false,value = "order.billAddress2") String billAddress2,
+                                              @RequestParam(required = false,value = "order.billCity") String billCity,
+                                              @RequestParam(required = false,value = "order.billState") String billState,
+                                              @RequestParam(required = false,value = "order.billZip") String billZip,
+                                              @RequestParam(required = false,value = "order.billCountry") String billCountry,
+                                              @RequestParam(required = false,value = "order.billToFirstName") String billToFirstName,
+                                              @RequestParam(required = false,value = "order.billToLastName") String billToLastName,
+                                              @RequestParam(required = false,value = "order.cardType") String cardType,
+                                              @RequestParam(required = false,value = "order.creditCard") String creditCard,
+                                              @RequestParam(required = false,value = "order.expiryDate") String expiryDate){
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }else {
+            OrderVO order = (OrderVO) session.getAttribute("order");
             order.setCardType(cardType);
             order.setCreditCard(creditCard);
             order.setExpiryDate(expiryDate);
@@ -181,18 +160,62 @@ public class OrderController {
             order.setBillCountry(billCountry);
             order.setBillToFirstName(billToFirstName);
             order.setBillToLastName(billToLastName);
-            model.addAttribute("order", order);
-            return "order/confirmOrder";
+            session.setAttribute("order", order);
+            return CommonResponse.createForSuccess(order);
         }
     }
 
-    @GetMapping("/chooseAddress")
+    @PostMapping("/orders")
     @ResponseBody
-    public UserAddress changeAddress(@RequestParam("addressId") String addressId,
-                                     @ModelAttribute("loginAccount") AccountVO loginAccount,
-                                     @ModelAttribute("order") OrderVO order,
-                                     Model model){
+    public CommonResponse<Object> placeOrder(HttpSession session){
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }else {
+            OrderVO order = (OrderVO) session.getAttribute("order");
+            Date date = new Date();
+            order.setOrderDate(date);
+            System.out.println(date);
+            order.setOrderId(orderService.getNextOrderId());
+            orderService.decreaseItemQuantity(order);
+            orderService.insertOrder(order);
+            session.removeAttribute("cart");
+            userService.deleteCart(loginAccount.getUsername());
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            String currentDate = formatter.format(date);
+            String addOrderString = "User "+ loginAccount.getUsername() + " added a new order "
+                    + "<a href= \"viewOrder?orderId=" + order.getOrderId() + "\">"
+                    + order.getOrderId() + "</a >.";
+            userService.updateJournal(loginAccount.getUsername(), addOrderString, currentDate, "#ED7D31");
+            return CommonResponse.createForSuccess(order);
+        }
+    }
+
+
+
+    @GetMapping("/orders/addresses")
+    @ResponseBody
+    public CommonResponse<Object> getAddresses(HttpSession session) {
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }else {
+            List<UserAddress> userAddressList = userService.getUserOKAddressByUsername(loginAccount.getUsername());
+            return CommonResponse.createForSuccess(userAddressList);
+        }
+    }
+
+    @PutMapping("/orders/addresses/{addressId}")
+    @ResponseBody
+    public CommonResponse<Object> changeAddress(@PathVariable("addressId") String addressId,
+                                     HttpSession session){
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }
+        OrderVO order = (OrderVO) session.getAttribute("order");
         UserAddress userAddress = userService.getUserAddressByAddressId(loginAccount.getUsername(),addressId);
+        System.out.println(userAddress);
         order.setShipAddress1(userAddress.getAddress1());
         order.setShipAddress2(userAddress.getAddress2());
         order.setShipCity(userAddress.getCity());
@@ -201,37 +224,44 @@ public class OrderController {
         order.setShipCountry(userAddress.getCountry());
         order.setShipToFirstName(userAddress.getFirstName());
         order.setShipToLastName(userAddress.getLastName());
-        model.addAttribute("order", order);
-        return userAddress;
+        session.setAttribute("order", order);
+        return CommonResponse.createForSuccess(userAddress);
     }
-
-    @GetMapping("/deleteAddress")
+    @DeleteMapping("/addresses/{addressId}")
     @ResponseBody
-    public String deleteAddress(@RequestParam("addressId") String addressId,
-                                @ModelAttribute("loginAccount") AccountVO loginAccount,
-                                @ModelAttribute("order") OrderVO order,
-                                Model model){
+    public CommonResponse<Object> deleteAddress(@PathVariable("addressId") String addressId,
+                                        HttpSession session){
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }
         userService.deleteUserAddress(loginAccount.getUsername(),addressId);
-        return "delete success";
+        return CommonResponse.createForSuccess("delete success");
     }
 
-    @GetMapping("/setAddress")
+    @PutMapping("/addresses/{addressId}")
     @ResponseBody
-    public String setAddress(@RequestParam("addressId") String addressId,
-                             @ModelAttribute("loginAccount") AccountVO loginAccount,
-                             @ModelAttribute("order") OrderVO order,
-                             Model model){
+    public CommonResponse<Object> updateAddress(@PathVariable("addressId") String addressId,
+                                        HttpSession session){
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }
         userService.updateMainAddress(loginAccount.getUsername(),addressId);
-        return "set main success";
+        return CommonResponse.createForSuccess("set main success");
+
     }
 
-    @GetMapping("/getAddress")
-    public UserAddress getAddress(@RequestParam("addressId") String addressId,
-                                  @ModelAttribute("loginAccount") AccountVO loginAccount,
-                                  @ModelAttribute("order") OrderVO order,
-                                  Model model){
+    @GetMapping("/addresses/{addressId}")
+    @ResponseBody
+    public CommonResponse<Object> getAddress(@PathVariable("addressId") String addressId,
+                                     HttpSession session){
+        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
+        if (loginAccount == null) {
+            return CommonResponse.createForError("Please log in first");
+        }
         UserAddress userAddress = userService.getUserAddressByAddressId(loginAccount.getUsername(),addressId);
-        return userAddress;
+        return CommonResponse.createForSuccess(userAddress);
     }
 
     @GetMapping("/returnOrder")

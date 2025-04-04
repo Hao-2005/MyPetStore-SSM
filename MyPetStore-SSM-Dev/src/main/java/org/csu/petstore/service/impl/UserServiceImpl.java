@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUserAddress(String username, String addressId) {
         UpdateWrapper<UserAddress> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("userid", username)
-                .eq("addressid", addressId)
+                .eq("addrid", addressId)
                 .set("status", "NO");
         userAddressMapper.update(updateWrapper);
     }
@@ -195,7 +195,7 @@ public class UserServiceImpl implements UserService {
     public void updateMainAddress(String username, String addressId) {
         QueryWrapper<UserAddress> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userid", username)
-                .eq("addressid", addressId);
+                .eq("addrid", addressId);
         UserAddress userAddress = userAddressMapper.selectOne(queryWrapper);
         Account account = accountMapper.selectById(username);
         account.setFirstName(userAddress.getFirstName());

@@ -1,5 +1,6 @@
 package org.csu.petstore.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.csu.petstore.entity.LineItem;
 import org.csu.petstore.entity.OrderStatus;
@@ -68,7 +69,7 @@ public class OrderVO {
         this.cardType = orders.getCardType();
         this.locale = orders.getLocale();
     }
-
+    @JsonIgnore
     public Orders getOrders() {
         Orders orders = new Orders();
         orders.setOrderId(this.orderId);
@@ -98,6 +99,7 @@ public class OrderVO {
         orders.setLocale(this.locale);
         return orders;
     }
+    @JsonIgnore
     public OrderStatus getOrderStatus() {
         OrderStatus orderStatus = new OrderStatus();
         orderStatus.setOrderId(this.orderId);
@@ -138,7 +140,7 @@ public class OrderVO {
         locale = "CA";
         status = "P";
 
-        Iterator<CartItemVO> i = cart.getAllCartItems();
+        Iterator<CartItemVO> i = cart.getCartItems();
         while (i.hasNext()) {
             CartItemVO cartItem = (CartItemVO) i.next();
             addLineItem(cartItem);

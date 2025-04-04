@@ -46,19 +46,19 @@ public class UserController {
     @RequestMapping("/signon")
     public String signon(@RequestParam("username") String username,
                          @RequestParam("password") String password,
-                         @RequestParam("captchaInput") String captchaInput,
+                         //@RequestParam("captchaInput") String captchaInput,
                          Model model) {
         Account loginAccount = userService.getAccountByUsernameAndPssword(username, password);
-        String captcha = (String) model.asMap().get("captcha");
+        /*String captcha = (String) model.asMap().get("captcha");
         System.out.println("captcha:"+captcha);
-        System.out.println("captchaInput:"+captchaInput);
+        System.out.println("captchaInput:"+captchaInput);*/
         if(!validate1(username,password)){
             model.addAttribute("signOnMsg", msg);
             return "account/signon";
-        }else if(!judgeCaptcha(captchaInput,captcha)){
+        }/*else if(!judgeCaptcha(captchaInput,captcha)){
             model.addAttribute("signOnMsg", msg);
             return "account/signon";
-        } else{
+        }*/ else{
             if(loginAccount == null) {
                 msg = "用户名或密码错误";
                 model.addAttribute("signOnMsg", msg);
@@ -201,185 +201,6 @@ public class UserController {
         model.addAttribute("journals", journals);
         return "Journal/journal.html";
     }
-
-    @GetMapping("/viewCart")
-    public String viewCart(Model model) {
-        AccountVO loginAccount = (AccountVO) model.asMap().get("loginAccount");
-        if(loginAccount==null){
-            return "account/signon";
-        }else{
-            CartVO cartVO = userService.getCart(loginAccount.getUsername());
-            model.addAttribute("cart", cartVO);
-            List<Product> productList = catalogService.getProductListByCategory(loginAccount.getFavouriteCategoryId());
-            model.addAttribute("myList", productList);
-            System.out.println(loginAccount.isListOption());
-            System.out.println(productList);
-            return "cart/cart";
-        }
-    }
-
-    @GetMapping("/addItemToCart")
-    public String addItemtoCart(@RequestParam("workingItemId") String workingItemId,
-                                Model model) {
-        AccountVO loginAccount = (AccountVO) model.asMap().get("loginAccount");
-        String isAdd = (String) model.asMap().get("isAdd");
-        if(loginAccount==null){
-            return "account/signon";
-        }
-        else
-        {
-            CartVO currentCart = userService.getCart(loginAccount.getUsername());
-            CartItemVO cartItem = (CartItemVO) currentCart.getItemMap().get(workingItemId);
-            if(isAdd.equals("true")){
-                if(cartItem==null){
-                    CartItemVO newCartItem = new CartItemVO();
-                    ItemVO itemVO = catalogService.getItem(workingItemId);
-                    if(catalogService.checkItemQuantity(workingItemId,1)){
-                        Boolean isInStock = catalogService.isItemInStock(itemVO.getItemId());
-                        newCartItem.setItem(itemVO);
-                        newCartItem.setQuantity(1);
-                        newCartItem.setInStock(isInStock);
-                        userService.addCartItem(loginAccount.getUsername(), newCartItem);
-
-                        Date date = new Date();
-                        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                        String currentDate = formatter.format(date);
-                        String addItemString = "User "+ loginAccount.getUsername() + " added product "
-                                + "<a href=\"itemForm?itemId=" + workingItemId + "\">" + workingItemId + "</a>"
-                                + " to the <a href=\"cartForm\">cart</a>.";
-                        userService.updateJournal(loginAccount.getUsername(), addItemString, currentDate, "#FFC000");
-                    }else {
-                        model.addAttribute("addMsg","item is not in stock");
-                        List<Item> itemList = catalogService.getItemListByProduct(itemVO.getProductId());
-                        model.addAttribute("itemList", itemList);ProductVO product = catalogService.getProduct(itemVO.getProductId());
-                        model.addAttribute("product", product);
-                        return "catalog/product";
-                    }
-
-                }
-                else
-                {
-                    if(catalogService.checkItemQuantity(workingItemId,cartItem.getQuantity()+1)){
-                        cartItem.incrementQuantity();
-                        userService.updateCart(loginAccount.getUsername(), cartItem);
-                    }else {
-                        ItemVO itemVO = catalogService.getItem(workingItemId);
-                        model.addAttribute("addMsg","item is not in stock");
-                        ProductVO product = catalogService.getProduct(itemVO.getProductId());
-                        model.addAttribute("product", product);
-                        return "catalog/product";
-                    }
-
-                }
-            }
-            model.addAttribute("isAdd", "false");
-            CartVO cartVO = userService.getCart(loginAccount.getUsername());
-            model.addAttribute("cart", cartVO);
-            return "cart/cart";
-        }
-    }
-
-    @GetMapping("/removeCartItem")
-    public String removeCartItem(@RequestParam("workingItemId") String workingItemId,
-                                 Model model) {
-        AccountVO loginAccount = (AccountVO) model.asMap().get("loginAccount");
-        CartVO currentCart = userService.getCart(loginAccount.getUsername());
-        CartItemVO cartItem = (CartItemVO) currentCart.getItemMap().get(workingItemId);
-        if(cartItem==null){
-            model.addAttribute("errorMsg"," Attempted to remove null CartItem from Cart.");
-            return "cart/cart";
-        }else{
-            userService.deleteItem(loginAccount.getUsername(), cartItem);
-            CartVO cartVO = userService.getCart(loginAccount.getUsername());
-            model.addAttribute("cart", cartVO);
-
-            Date date = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            String currentDate = formatter.format(date);
-            String deleteItemString = "User "+ loginAccount.getUsername() + " deleted product "
-                    + "<a href=\"itemForm?itemId=" + workingItemId + "\">" + workingItemId + "</a>"
-                    + " from the <a href=\"cartForm\">cart</a>.";
-            userService.updateJournal(loginAccount.getUsername(), deleteItemString, currentDate, "#BF9000");
-
-            return "cart/cart";
-        }
-    }
-
-    @RequestMapping("/updateCart")
-    public String updateCart(@ModelAttribute("loginAccount") AccountVO loginAccount,
-                             @ModelAttribute("cart") CartVO cart,
-                             HttpServletRequest request,
-                             Model model) {
-        Iterator<CartItemVO> cartItems = cart.getCartItems();
-        while (cartItems.hasNext()) {
-            CartItemVO cartItem = cartItems.next();
-            String itemId = cartItem.getItem().getItemId();
-            try {
-                String quantityString = (String) request.getAttribute(itemId);
-                int quantity = Integer.parseInt(quantityString);
-
-                cartItem.setQuantity(quantity);
-                if (quantity < 1) {
-                    userService.deleteItem(loginAccount.getUsername(), cartItem);
-                } else {
-                    if(catalogService.checkItemQuantity(cartItem.getItem().getItemId(),quantity)){
-                        userService.updateCart(loginAccount.getUsername(), cartItem);
-                    }else{
-                        model.addAttribute("viewNewOrderMsg","Not enough stock");
-                        return "cart/cart";
-                    }
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        CartVO cartVO = userService.getCart(loginAccount.getUsername());
-        model.addAttribute("cart", cartVO);
-        return "cart/cart";
-    }
-
-    @PostMapping("/updateCartItem")
-    @ResponseBody
-    public Map<String, BigDecimal> UpdateCartItem(@ModelAttribute("loginAccount") AccountVO loginAccount,
-                                 @ModelAttribute("cart") CartVO cart,
-                                 @RequestParam("quantity") int quantity,
-                                 @RequestParam("itemId") String itemId,
-                                 Model model) {
-        CartItemVO cartItem = (CartItemVO) cart.getItemMap().get(itemId);
-        Map<String, BigDecimal> totals = new HashMap<>();
-        try
-        {
-            if (quantity < 1)
-            {
-                userService.deleteItem(loginAccount.getUsername(),cartItem);
-            }
-            else
-            {
-                if(catalogService.checkItemQuantity(cartItem.getItem().getItemId(),quantity)){
-                    cartItem.setQuantity(quantity);
-                    userService.updateCart(loginAccount.getUsername(),cartItem);
-                } else{
-                    totals.put("isOk", BigDecimal.valueOf(cartItem.getQuantity()));
-                    return totals;
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        CartVO newCart = userService.getCart(loginAccount.getUsername());
-        model.addAttribute("cart", newCart);
-        totals.put("cartItemTotal", cartItem.getTotal());
-        totals.put("subTotal", newCart.getSubTotal());
-        totals.put("isOk", null);
-        return totals;
-
-    }
-
-
 
     @GetMapping("/getCaptcha")
     public void getCaptcha(HttpServletRequest request,HttpServletResponse response,Model model) throws IOException, IOException {
