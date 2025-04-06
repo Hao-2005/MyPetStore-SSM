@@ -14,20 +14,26 @@ import org.csu.petstore.vo.CategoryVO;
 import org.csu.petstore.vo.ItemVO;
 import org.csu.petstore.vo.ProductVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+<<<<<<< HEAD
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
+=======
+>>>>>>> SQL
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-@Controller
-@RequestMapping("/catalog")
-@SessionAttributes(value = {"productList","isAdd","allCategories","languages","categories","myList"})
+
+@RestController
+@RequestMapping(value={"/catalog", "/common"})
+@SessionAttributes(value = {"productList"})
 public class CatalogController {
 
     @Autowired
@@ -60,6 +66,13 @@ public class CatalogController {
         return "catalog/category";
     }
 
+    @GetMapping("/category/{categoryId}")
+    public CategoryVO viewCategory(@PathVariable String categoryId)
+    {
+        CategoryVO category = catalogService.getCategory(categoryId);
+        return category;
+    }
+
     @GetMapping("/returnMain")
     public String returnMain(Model model)
     {
@@ -86,6 +99,12 @@ public class CatalogController {
         return "catalog/product";
     }
 
+    @GetMapping("/product/{productId}")
+    public ProductVO viewProduct(@PathVariable String productId)
+    {
+        return catalogService.getProduct(productId);
+    }
+
     @GetMapping("/viewItem")
     public String viewItem(@RequestParam("itemId") String itemId,
                            @ModelAttribute("loginAccount") AccountVO loginAccount,
@@ -102,6 +121,12 @@ public class CatalogController {
         return "catalog/item";
     }
 
+    @GetMapping("/item/{itemId}")
+    public ItemVO viewItem(@PathVariable String itemId)
+    {
+        return catalogService.getItem(itemId);
+    }
+
     @GetMapping("/search")
     public String search(@RequestParam("keyword") String keyword, Model model){
         List<Product> productList = catalogService.getProductList(keyword);
@@ -109,6 +134,7 @@ public class CatalogController {
         return "catalog/searchProduct";
     }
 
+<<<<<<< HEAD
     @GetMapping("/productAuto")
     @ResponseBody
     public List<Product> productAutoComplete(@RequestParam("keyword") String keyword,
@@ -130,4 +156,10 @@ public class CatalogController {
         }
         return itemList;
     }
+
+    @GetMapping("/search/{keyword}")
+    public List<Product> search(@PathVariable  String keyword){
+        return catalogService.getProductList(keyword);
+    }
+
 }
