@@ -12,6 +12,7 @@ public class ItemVO {
     private String productName;
     private BigDecimal listPrice;
 
+    public String description;
     private String attribute1;
     private String attribute2;
     private String attribute3;

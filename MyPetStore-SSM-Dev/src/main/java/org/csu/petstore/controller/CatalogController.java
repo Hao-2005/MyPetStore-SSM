@@ -76,7 +76,9 @@ public class CatalogController {
     @GetMapping("/item/{itemId}")
     public ItemVO viewItem(@PathVariable String itemId)
     {
-        return catalogService.getItem(itemId);
+        ItemVO item = catalogService.getItem(itemId);
+        item.description = catalogService.getProduct(item.getProductId()).getDescription();
+        return item;
     }
 
     @GetMapping("/search")
