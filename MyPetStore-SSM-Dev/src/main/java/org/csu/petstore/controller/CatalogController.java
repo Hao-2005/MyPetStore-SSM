@@ -18,13 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-<<<<<<< HEAD
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
-=======
->>>>>>> SQL
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,7 +131,6 @@ public class CatalogController {
         return "catalog/searchProduct";
     }
 
-<<<<<<< HEAD
     @GetMapping("/productAuto")
     @ResponseBody
     public List<Product> productAutoComplete(@RequestParam("keyword") String keyword,
