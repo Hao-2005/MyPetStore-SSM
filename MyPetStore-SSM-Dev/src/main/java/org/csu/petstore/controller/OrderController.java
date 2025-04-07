@@ -6,6 +6,7 @@ import jakarta.websocket.server.PathParam;
 import org.csu.petstore.common.CommonResponse;
 import org.csu.petstore.entity.OrderStatus;
 import org.csu.petstore.entity.UserAddress;
+import org.csu.petstore.security.JwtUtil;
 import org.csu.petstore.service.OrderService;
 import org.csu.petstore.service.UserService;
 import org.csu.petstore.vo.AccountVO;
@@ -36,14 +37,18 @@ public class OrderController {
     private UserService userService;
     @Autowired
     private ServletContext servletContext;
+    @Autowired
+    JwtUtil jwtUtil;
 
     @GetMapping("/orders")
     @ResponseBody
-    public CommonResponse<Object> orders(HttpSession session) {
-        AccountVO loginAccount = (AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+    public CommonResponse<Object> orders(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }else {
+            AccountVO loginAccount = userService.getAccountVOByUsername(username);
             List<OrderVO> orderVOList = orderService.getOrdersByUsername(loginAccount.getUsername());
             return CommonResponse.createForSuccess(orderVOList);
         }
@@ -52,9 +57,10 @@ public class OrderController {
     @GetMapping("/orders/{orderId}")
     @ResponseBody
     public CommonResponse<Object> viewOrder(@PathVariable int orderId,
-                            HttpSession session) {
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+                                            @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }
         OrderVO orderVO = orderService.getOrderWithLineItem(orderId);
@@ -63,11 +69,13 @@ public class OrderController {
 
     @GetMapping("/carts/orders")
     @ResponseBody
-    public CommonResponse<Object> viewNewOrder(HttpSession session) {
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+    public CommonResponse<Object> viewNewOrder(@RequestHeader("Authorization") String authHeader,HttpSession session) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }else {
+            AccountVO loginAccount = userService.getAccountVOByUsername(username);
             CartVO cart = userService.getCart(loginAccount.getUsername());
             OrderVO orderVO = new OrderVO();
             String isModifying = orderService.checkModifying(cart);
@@ -85,9 +93,10 @@ public class OrderController {
     }
 
 
-    @PutMapping("/orders/addresses")
+/*    @PutMapping("/orders/addresses")
     @ResponseBody
-    public CommonResponse<Object> getAddresses(HttpSession session,
+    public CommonResponse<Object> getAddresses(@RequestHeader("Authorization") String authHeader,
+                                               HttpSession session,
                                                @RequestParam(required = false,value = "order.shippingAddress1") String shippingAddress1,
                                                @RequestParam(required = false,value = "order.shippingAddress2") String shippingAddress2,
                                                @RequestParam(required = false,value = "order.shippingCity") String shippingCity,
@@ -96,17 +105,14 @@ public class OrderController {
                                                @RequestParam(required = false,value = "order.shipCountry") String shipCountry,
                                                @RequestParam(required = false,value = "order.shipToFirstName") String shipToFirstName,
                                                @RequestParam(required = false,value = "order.shipToLastName") String shipToLastName) {
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }else {
+            AccountVO loginAccount = userService.getAccountVOByUsername(username);
             OrderVO order = (OrderVO) session.getAttribute("order");
             UserAddress userAddress = new UserAddress();
-            System.out.println("shippingAddress1:"+shippingAddress1);
-            System.out.println("shippingAddress2:"+shippingAddress2);
-            System.out.println("shippingCity:"+shippingCity);
-            System.out.println("shippingState:"+shippingState);
-            System.out.println("shipZip:"+shipZip);
             order.setShipAddress1(shippingAddress1);
             order.setShipAddress2(shippingAddress2);
             order.setShipCity(shippingCity);
@@ -128,11 +134,12 @@ public class OrderController {
             userService.addUserAddress(userAddress);
             return CommonResponse.createForSuccess(order);
         }
-    }
+    }*/
 
-    @PutMapping("/orders")
+    /*@PutMapping("/orders")
     @ResponseBody
-    public CommonResponse<Object> addNewOrder(HttpSession session,
+    public CommonResponse<Object> addNewOrder(@RequestBody OrderVO order,
+                                              @RequestHeader("Authorization") String authHeader,
                                               @RequestParam(required = false,value = "order.billAddress1") String billAddress1,
                                               @RequestParam(required = false,value = "order.billAddress2") String billAddress2,
                                               @RequestParam(required = false,value = "order.billCity") String billCity,
@@ -144,11 +151,11 @@ public class OrderController {
                                               @RequestParam(required = false,value = "order.cardType") String cardType,
                                               @RequestParam(required = false,value = "order.creditCard") String creditCard,
                                               @RequestParam(required = false,value = "order.expiryDate") String expiryDate){
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }else {
-            OrderVO order = (OrderVO) session.getAttribute("order");
             order.setCardType(cardType);
             order.setCreditCard(creditCard);
             order.setExpiryDate(expiryDate);
@@ -160,26 +167,26 @@ public class OrderController {
             order.setBillCountry(billCountry);
             order.setBillToFirstName(billToFirstName);
             order.setBillToLastName(billToLastName);
-            session.setAttribute("order", order);
             return CommonResponse.createForSuccess(order);
         }
-    }
+    }*/
 
     @PostMapping("/orders")
     @ResponseBody
-    public CommonResponse<Object> placeOrder(HttpSession session){
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+    public CommonResponse<Object> placeOrder(@RequestBody OrderVO order,
+                                             @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }else {
-            OrderVO order = (OrderVO) session.getAttribute("order");
+            AccountVO loginAccount = userService.getAccountVOByUsername(username);
             Date date = new Date();
             order.setOrderDate(date);
             System.out.println(date);
             order.setOrderId(orderService.getNextOrderId());
             orderService.decreaseItemQuantity(order);
             orderService.insertOrder(order);
-            session.removeAttribute("cart");
             userService.deleteCart(loginAccount.getUsername());
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             String currentDate = formatter.format(date);
@@ -195,17 +202,18 @@ public class OrderController {
 
     @GetMapping("/orders/addresses")
     @ResponseBody
-    public CommonResponse<Object> getAddresses(HttpSession session) {
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+    public CommonResponse<Object> getAddresses(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }else {
-            List<UserAddress> userAddressList = userService.getUserOKAddressByUsername(loginAccount.getUsername());
+            List<UserAddress> userAddressList = userService.getUserOKAddressByUsername(username);
             return CommonResponse.createForSuccess(userAddressList);
         }
     }
 
-    @PutMapping("/orders/addresses/{addressId}")
+    /*@PutMapping("/orders/addresses/{addressId}")
     @ResponseBody
     public CommonResponse<Object> changeAddress(@PathVariable("addressId") String addressId,
                                      HttpSession session){
@@ -226,28 +234,30 @@ public class OrderController {
         order.setShipToLastName(userAddress.getLastName());
         session.setAttribute("order", order);
         return CommonResponse.createForSuccess(userAddress);
-    }
+    }*/
     @DeleteMapping("/addresses/{addressId}")
     @ResponseBody
     public CommonResponse<Object> deleteAddress(@PathVariable("addressId") String addressId,
-                                        HttpSession session){
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+                                                @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }
-        userService.deleteUserAddress(loginAccount.getUsername(),addressId);
+        userService.deleteUserAddress(username,addressId);
         return CommonResponse.createForSuccess("delete success");
     }
 
     @PutMapping("/addresses/{addressId}")
     @ResponseBody
     public CommonResponse<Object> updateAddress(@PathVariable("addressId") String addressId,
-                                        HttpSession session){
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+                                                @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }
-        userService.updateMainAddress(loginAccount.getUsername(),addressId);
+        userService.updateMainAddress(username,addressId);
         return CommonResponse.createForSuccess("set main success");
 
     }
@@ -255,23 +265,69 @@ public class OrderController {
     @GetMapping("/addresses/{addressId}")
     @ResponseBody
     public CommonResponse<Object> getAddress(@PathVariable("addressId") String addressId,
-                                     HttpSession session){
-        AccountVO loginAccount =(AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+                                             @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }
-        UserAddress userAddress = userService.getUserAddressByAddressId(loginAccount.getUsername(),addressId);
+        UserAddress userAddress = userService.getUserAddressByAddressId(username,addressId);
         return CommonResponse.createForSuccess(userAddress);
     }
 
-    @GetMapping("/returnOrder")
+
+    /*@GetMapping("/returnOrder")
     public String returnOrder(String orderId, Model model)
     {
         model.addAttribute("orderId", orderId);
         return "order/returnOrder";
-    }
+    }*/
 
-    @PostMapping("/sendReturnRequest")
+    @DeleteMapping("/orders/{orderId}")
+    @ResponseBody
+    public CommonResponse<Object> sendReturnRequest(@PathVariable("orderId") String orderId,
+                                                    @RequestHeader("Authorization") String authHeader,
+                                                    @RequestParam("description") String description,
+                                                    @RequestParam("reason") String reason,
+                                                    @RequestParam("image") MultipartFile image){
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
+            return CommonResponse.createForError("Please log in first");
+        }else {
+            String imagePath = null;
+            if (!image.isEmpty()) {
+                try {
+                    String uploadDir = System.getProperty("user.dir") + "/../Images/";
+                    System.out.println(uploadDir);
+                    File dir = new File(uploadDir);
+                    if (!dir.exists()) {
+                        dir.mkdirs(); // 创建目录
+                    }
+
+                    String fileName = orderId + ".jpg";
+                    File destFile = new File(uploadDir, fileName);
+                    image.transferTo(destFile);
+
+                    //存储图片路径
+                    imagePath = "/../Images/" + fileName;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return CommonResponse.createForError("Image upload failed!");
+                }
+            }
+
+            orderService.insertReturnOrder(orderId, reason, description, imagePath);
+
+            orderService.updateStatus(orderId);
+            String msg = "The return request has been sent and is waiting to be reviewed by the merchant.";
+            AccountVO loginAccount = userService.getAccountVOByUsername(username);
+            List<OrderVO> orderVOList = orderService.getOrdersByUsername(loginAccount.getUsername());
+            return CommonResponse.createForSuccess(msg,orderVOList);
+        }
+    }
+    /*@PostMapping("/sendReturnRequest")
     public String sendReturnRequest(String orderId, String reason, String description, MultipartFile image, Model model)
     {
         String imagePath = null;
@@ -309,5 +365,5 @@ public class OrderController {
         model.addAttribute("orderList", orderVOList);
 
         return "order/listOrder";
-    }
+    }*/
 }

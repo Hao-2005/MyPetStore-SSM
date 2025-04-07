@@ -11,6 +11,7 @@ import org.csu.petstore.vo.AccountVO;
 import org.csu.petstore.vo.CartItemVO;
 import org.csu.petstore.vo.CartVO;
 import org.csu.petstore.vo.ItemVO;
+import org.csu.petstore.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,27 +28,33 @@ public class CartController
     CatalogService catalogService;
     @Autowired
     UserService userService;
+    @Autowired
+    JwtUtil jwtUtil;
 
 
     // 查看购物车
     @GetMapping("/carts")
     @ResponseBody
-    public CommonResponse<Object> viewCart(HttpSession session) {
-        AccountVO loginAccount = (AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+    public CommonResponse<Object> viewCart(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }else{
+            AccountVO loginAccount = userService.getAccountVOByUsername(username);
             CartVO cartVO = userService.getCart(loginAccount.getUsername());
             return CommonResponse.createForSuccess(cartVO);
         }
     }
     @PutMapping("/carts")
-    public Object updateCart(HttpSession session,
+    public CommonResponse<Object> updateCart(@RequestHeader("Authorization") String authHeader,
                              HttpServletRequest request) {
-        AccountVO loginAccount = (AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }
+        AccountVO loginAccount = userService.getAccountVOByUsername(username);
         CartVO cart = userService.getCart(loginAccount.getUsername());
         Iterator<CartItemVO> cartItems = cart.getCartItems();
         while (cartItems.hasNext()) {
@@ -64,8 +71,7 @@ public class CartController
                     if(catalogService.checkItemQuantity(cartItem.getItem().getItemId(),quantity)){
                         userService.updateCart(loginAccount.getUsername(), cartItem);
                     }else{
-                        session.setAttribute("viewNewOrderMsg","Not enough stock");
-                        return "cart/cart";
+                        return CommonResponse.createForError(2,"item is not in stock");
                     }
 
                 }
@@ -74,17 +80,19 @@ public class CartController
             }
         }
         CartVO cartVO = userService.getCart(loginAccount.getUsername());
-        session.setAttribute("cart", cartVO);
-        return "cart/cart";
+        return CommonResponse.createForSuccess(cartVO);
     }
 
     @PostMapping("/carts/{itemId}")
     @ResponseBody
-    public CommonResponse<Object> addItemToCart(@PathVariable("itemId") String workingItemId, HttpSession session) {
-        AccountVO loginAccount = (AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+    public CommonResponse<Object> addItemToCart(@PathVariable("itemId") String workingItemId,
+                                                @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }else{
+            AccountVO loginAccount = userService.getAccountVOByUsername(username);
             CartVO currentCart = userService.getCart(loginAccount.getUsername());
             CartItemVO cartItem = currentCart.getItemMap().get(workingItemId);
             if(cartItem == null){
@@ -125,8 +133,14 @@ public class CartController
 
     @DeleteMapping("/carts/{itemId}")
     @ResponseBody
-    public CommonResponse<Object> removeItemFromCart(@PathVariable("itemId") String workingItemId, HttpSession session) {
-        AccountVO loginAccount = (AccountVO) session.getAttribute("loginAccount");
+    public CommonResponse<Object> removeItemFromCart(@PathVariable("itemId") String workingItemId,
+                                                     @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
+            return CommonResponse.createForError("Please log in first");
+        }
+        AccountVO loginAccount = userService.getAccountVOByUsername(username);
         CartVO currentCart = userService.getCart(loginAccount.getUsername());
         CartItemVO cartItem = currentCart.getItemMap().get(workingItemId);
         if(cartItem==null){
@@ -149,11 +163,14 @@ public class CartController
     @ResponseBody
     public CommonResponse<Object> updateItemQuantity(@PathVariable("itemId") String workingItemId,
                                                      @RequestParam("quantity") int quantity,
-                                                     HttpSession session) {
-        AccountVO loginAccount = (AccountVO) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
+                                                     @RequestHeader("Authorization") String authHeader) {
+
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
             return CommonResponse.createForError("Please log in first");
         }
+        AccountVO loginAccount = userService.getAccountVOByUsername(username);
         CartVO currentCart = userService.getCart(loginAccount.getUsername());
         CartItemVO cartItem = currentCart.getItemMap().get(workingItemId);
         Map<String, BigDecimal> totals = new HashMap<>();
@@ -188,8 +205,13 @@ public class CartController
     // 获得喜爱列表
     @GetMapping("/favouriteList")
     @ResponseBody
-    public CommonResponse<Object> viewFavouriteList(HttpSession session) {
-        AccountVO loginAccount = (AccountVO) session.getAttribute("loginAccount");
+    public CommonResponse<Object> viewFavouriteList(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
+            return CommonResponse.createForError("Please log in first");
+        }
+        AccountVO loginAccount = userService.getAccountVOByUsername(username);
         if (loginAccount.isListOption()){
             List<Product> productList = catalogService.getProductListByCategory(loginAccount.getFavouriteCategoryId());
             return CommonResponse.createForSuccess(productList);
