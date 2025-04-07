@@ -112,7 +112,7 @@ public class UserController {
             }
 
             //返回注册页面并显示成功消息
-            return ResponseEntity.ok("You have submitted a password reset request. Please wait for the administrator's review.");;
+            return ResponseEntity.ok("You have submitted a password reset request. Please wait for the administrator's review.");
         }
     }
 
@@ -193,7 +193,7 @@ public class UserController {
         AccountVO loginAccount = userService.getAccountVOByUsername(username);
         List<OrderVO> orderVOList = orderService.getOrdersByUsername(loginAccount.getUsername());
 
-        return ResponseEntity.ok("The return request has been sent and is waiting to be reviewed by the merchant.")
+        return ResponseEntity.ok("The return request has been sent and is waiting to be reviewed by the merchant.");
     }
 
 
