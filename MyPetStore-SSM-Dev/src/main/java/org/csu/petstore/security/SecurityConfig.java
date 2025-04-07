@@ -16,7 +16,7 @@ public class SecurityConfig {
                         ,"/api/v1/account/me","/api/v1/account/me/myOrders", "/api/v1/account/me/myJournal"
                         ,"/api/v1/account/me/info","api/v1/auth/resetPsw","api/v1/account/myOrders/cancel"
                         ,"/carts","/carts/{itemId}","/favouriteList","/orders","/orders/{orderId}"
-                        ,"/addresses/{addressId}","/orders/addresses")
+                        ,"/addresses/{addressId}","/orders/addresses", "/catalog/**", "/images/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
