@@ -21,6 +21,7 @@ public class CORSFilter implements Filter {
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT"); // 允许跨域请求的方法
         response.setHeader("Access-Control-Max-Age", "3600"); // 预检请求的缓存时间
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); // 允许跨域请求的头信息
+        response.setHeader("Access-Control-Allow-Headers", "Authorization");
         filterChain.doFilter(request, response);
     }
 
