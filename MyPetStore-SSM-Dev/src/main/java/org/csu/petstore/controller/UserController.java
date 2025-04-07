@@ -47,11 +47,12 @@ public class UserController {
     private OrderService orderService;
     
     @PostMapping("/auth/login")
-    public String login(@RequestBody Signon signon) {
+    public ResponseEntity<?> login(@RequestBody Signon signon) {
         if(userService.login(signon.getUsername(), signon.getPassword())) {
-            return jwtUtil.generateToken(signon.getUsername());
+            String token = jwtUtil.generateToken(signon.getUsername());
+            return ResponseEntity.ok(token);
         }
-        return "Invalid username or password";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid username or password");
     }
 
     @GetMapping("/signOff")
@@ -69,10 +70,10 @@ public class UserController {
     }
 
     @PostMapping("/account")
-    public String register(@RequestBody AccountVO user) {
+    public ResponseEntity<?> register(@RequestBody AccountVO user) {
         Signon signon = userService.getSignonByUsername(user.getUsername());
         if(signon != null) {
-            return "account already exists";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("account already exists");
         }
 
         Date date = new Date();
@@ -82,18 +83,19 @@ public class UserController {
         user.setStatus("OK");
         userService.updateJournal(user.getUsername(), registerString, currentDate, "#C00000");
         userService.insertAccount(user);
-        return jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername());
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/auth/login/forget")
-    public String forgetPassword(@RequestBody Signon user)
+    public ResponseEntity<?> forgetPassword(@RequestBody Signon user)
     {
         System.out.println(user.getUsername());
         Signon signon = userService.getSignonByUsername(user.getUsername());
         String resetMessage;
         if(signon == null){
             //用户不存在，返回注册页面并显示错误消息
-            return "User does not exist!";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User doesn't exist");
         }
         else{
             System.out.println(signon.getUsername());
@@ -110,26 +112,8 @@ public class UserController {
             }
 
             //返回注册页面并显示成功消息
-            return  "You have submitted a password reset request. Please wait for the administrator's review.";
+            return ResponseEntity.ok("You have submitted a password reset request. Please wait for the administrator's review.");;
         }
-    }
-
-    @RequestMapping("/auth/tokens/current")
-    public String editAccount(@ModelAttribute AccountVO accountVO,
-                              @ModelAttribute("loginAccount") AccountVO loginAccount,
-                              @ModelAttribute("repeatPassword") String repeatPassword,
-                              Model model) {
-        accountVO.setUsername(loginAccount.getUsername());
-//        if(!validate2(accountVO.getUsername(),accountVO.getPassword(),repeatPassword)){
-//            model.addAttribute("editMsg", msg);
-//            return "account/edit";
-//        }
-            accountVO.setStatus("OK");
-            System.out.println(accountVO);
-            userService.updateAccount(accountVO);
-            AccountVO loginAccountVO = userService.getAccountVOByUsername(loginAccount.getUsername());
-            model.addAttribute("loginAccount", loginAccountVO);
-            return "account/edit";
     }
 
     @GetMapping("/account/me")
@@ -140,10 +124,11 @@ public class UserController {
         if (username == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
-        AccountVO accountVO = userService.getAccountVOByUsername(username);
-        if(accountVO == null) {
+        Signon signon = userService.getSignonByUsername(username);
+        if(signon == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user do not exist");
         }
+        AccountVO accountVO = userService.getAccountVOByUsername(username);
         accountVO.setPassword(null);
         return ResponseEntity.ok(accountVO);
     }
@@ -155,8 +140,8 @@ public class UserController {
         if (username == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
-        AccountVO accountVO = userService.getAccountVOByUsername(username);
-        if(accountVO == null) {
+        Signon signon = userService.getSignonByUsername(username);
+        if(signon == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user do not exist");
         }
 
@@ -165,16 +150,16 @@ public class UserController {
     }
 
     @PostMapping("/account/myOrders/cancel")
-    public String sendReturnRequest(@RequestHeader("Authorization") String authHeader,
+    public ResponseEntity<?> sendReturnRequest(@RequestHeader("Authorization") String authHeader,
                                     @RequestBody OrderCancelDTO orderCancelDTO) {
         String token = authHeader.substring(7);
         String username = jwtUtil.extractUsername(token);
         if (username == null) {
-            return "invalid token";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
         Signon signon = userService.getSignonByUsername(username);
         if(signon == null) {
-            return "user dose not exist";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user dose not exist");
         }
 
         String imagePath = null;
@@ -196,7 +181,7 @@ public class UserController {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                return "exception"; // 返回订单页面
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Exception occured"); // 返回订单页面
             }
         }
 
@@ -208,7 +193,7 @@ public class UserController {
         AccountVO loginAccount = userService.getAccountVOByUsername(username);
         List<OrderVO> orderVOList = orderService.getOrdersByUsername(loginAccount.getUsername());
 
-        return "The return request has been sent and is waiting to be reviewed by the merchant.";
+        return ResponseEntity.ok("The return request has been sent and is waiting to be reviewed by the merchant.")
     }
 
 
@@ -219,8 +204,8 @@ public class UserController {
         if(username == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
-        AccountVO accountVO = userService.getAccountVOByUsername(username);
-        if(accountVO == null) {
+        Signon signon = userService.getSignonByUsername(username);
+        if(signon == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user do not exist");
         }
         List<Journal> journals = userService.getAllJournals(username);
@@ -228,43 +213,44 @@ public class UserController {
     }
 
     @PostMapping("/auth/resetPsw")
-    public String checkResetPassword(@RequestHeader("Authorization") String authHeader,
+    public ResponseEntity<?> checkResetPassword(@RequestHeader("Authorization") String authHeader,
                                 @RequestBody ResetPasswordDTO resetPasswordDTO){
         String token = authHeader.substring(7);
         String username = jwtUtil.extractUsername(token);
         if(username == null) {
-            return "invalid token";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
         Signon signon = userService.getSignonByUsername(username);
         if(signon == null) {
-            return "user do not exist";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user do not exist");
         }
         String password = signon.getPassword();
         if(!password.equals(resetPasswordDTO.getOldPassword())){
-            return "invalid old password";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid old password");
         }
 
         AccountVO accountVO = userService.getAccountVOByUsername(username);
         accountVO.setPassword(resetPasswordDTO.getNewPassword());
         userService.updateAccount(accountVO);
-        return jwtUtil.generateToken(username);
+        String newToken = jwtUtil.generateToken(username);
+        return ResponseEntity.ok(newToken);
     }
 
     @PutMapping("/account/me/info")
-    public String updateUserInfo(@RequestHeader("Authorization") String authHeader,@RequestBody AccountVO user){
+    public ResponseEntity<?> updateUserInfo(@RequestHeader("Authorization") String authHeader,@RequestBody AccountVO user){
         String token = authHeader.substring(7);
         String username = jwtUtil.extractUsername(token);
         if(username == null) {
-            return "invalid token";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
-        AccountVO accountVO = userService.getAccountVOByUsername(username);
-        if(accountVO == null) {
-            return "user do not exist";
+        Signon signon = userService.getSignonByUsername(username);
+        if(signon == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user don't exist");
         }
-        user.setUsername(accountVO.getUsername());
-        user.setPassword(accountVO.getPassword());
+        user.setUsername(signon.getUsername());
+        user.setPassword(signon.getPassword());
         userService.updateAccount(user);
-        return "OK";
+        return ResponseEntity.ok(user);
     }
 
 }
