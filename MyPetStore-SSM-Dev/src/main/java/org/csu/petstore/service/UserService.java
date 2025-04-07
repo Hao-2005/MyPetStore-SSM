@@ -50,4 +50,5 @@ public interface UserService {
     public ResetPassword getResetPasswordByUserId(String userId);
     public void addViewProduct(String productId, String username);
     public void updateResetPassword(ResetPassword resetPassword);
+    public boolean login(String username, String password);
 }

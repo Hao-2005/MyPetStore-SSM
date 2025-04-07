@@ -306,4 +306,13 @@ public class UserServiceImpl implements UserService {
     public void updateResetPassword(ResetPassword resetPassword) {
         resetPasswordMapper.updateById(resetPassword);
     }
+
+    @Override
+    public boolean login(String username, String password) {
+        Signon signon = signonMapper.selectById(username);
+        if(signon == null){
+            return false;
+        }
+        return signon.getPassword().equals(password);
+    }
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.csu.petstore.entity.*;
+import org.csu.petstore.security.JwtUtil;
 import org.csu.petstore.service.CatalogService;
 import org.csu.petstore.service.UserService;
 import org.csu.petstore.vo.*;
@@ -23,9 +24,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
-
+@RestController
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/api/v1")
 @SessionAttributes(value = {"loginAccount","captcha","cart","isAdd","languages","categories","myList"})
 public class UserController {
 
@@ -34,6 +35,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private CatalogService catalogService;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping("/viewSignon")
     public String viewSignon(Model model)
@@ -43,33 +46,12 @@ public class UserController {
         return "account/signon";
     }
     
-    @RequestMapping("/signon")
-    public String signon(@RequestParam("username") String username,
-                         @RequestParam("password") String password,
-                         //@RequestParam("captchaInput") String captchaInput,
-                         Model model) {
-        Account loginAccount = userService.getAccountByUsernameAndPssword(username, password);
-        /*String captcha = (String) model.asMap().get("captcha");
-        System.out.println("captcha:"+captcha);
-        System.out.println("captchaInput:"+captchaInput);*/
-        if(!validate1(username,password)){
-            model.addAttribute("signOnMsg", msg);
-            return "account/signon";
-        }/*else if(!judgeCaptcha(captchaInput,captcha)){
-            model.addAttribute("signOnMsg", msg);
-            return "account/signon";
-        }*/ else{
-            if(loginAccount == null) {
-                msg = "用户名或密码错误";
-                model.addAttribute("signOnMsg", msg);
-                return "account/signon";
-            }else {
-                AccountVO loginAccountVO = userService.getAccountVOByUsername(username);
-                System.out.println("loginAccountVO:"+loginAccountVO);
-                model.addAttribute("loginAccount", loginAccountVO);
-                return "catalog/main";
-            }
+    @PostMapping("/auth/login")
+    public String login(@RequestBody Signon signon) {
+        if(userService.login(signon.getUsername(), signon.getPassword())) {
+            return jwtUtil.generateToken(signon.getUsername());
         }
+        return "Invalid username or password";
     }
 
     @GetMapping("/signOff")
@@ -91,64 +73,50 @@ public class UserController {
         return "account/register";
     }
 
-    @RequestMapping("/register")
-    public String register(@ModelAttribute AccountVO accountVO,
-                           @RequestParam("repeatPassword") String repeatPassword,
-                           @RequestParam("captchaInput") String captchaInput,
-                           Model model) {
-        AccountVO loginAccount = (AccountVO) model.asMap().get("loginAccount");
-        String captcha = (String) model.asMap().get("captcha");
-        System.out.println(repeatPassword);
-        if(!validate2(accountVO.getUsername(),accountVO.getPassword(),repeatPassword)){
-            model.addAttribute("registerMsg", msg);
-            return "account/register";
-        }else if(!judgeCaptcha(captchaInput,captcha)){
-            model.addAttribute("registerMsg", msg);
-            return "account/register";
-        } else{
-            Date date = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            String currentDate = formatter.format(date);
-            String registerString = "User "+ accountVO.getUsername() + " completed registration.";
-            accountVO.setStatus("OK");
-            userService.updateJournal(accountVO.getUsername(), registerString, currentDate, "#C00000");
-            userService.insertAccount(accountVO);
-            return "catalog/main";
+    @PostMapping("/account")
+    public String register(@RequestBody AccountVO user) {
+        Signon signon = userService.getSignonByUsername(user.getUsername());
+        if(signon != null) {
+            return "account already exists";
         }
+
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String currentDate = formatter.format(date);
+        String registerString = "User "+ user.getUsername() + " completed registration.";
+        user.setStatus("OK");
+        userService.updateJournal(user.getUsername(), registerString, currentDate, "#C00000");
+        userService.insertAccount(user);
+        return jwtUtil.generateToken(user.getUsername());
     }
 
-    @GetMapping("/forgetPassword")
-    public String forgetPassword(@RequestParam("userId") String userId)
+    @PostMapping("/auth/login/forget")
+    public String forgetPassword(@RequestBody Signon user)
     {
-        System.out.println(userId);
-        Signon signon = userService.getSignonByUsername(userId);
+        System.out.println(user.getUsername());
+        Signon signon = userService.getSignonByUsername(user.getUsername());
         String resetMessage;
-        if(signon == null)
-        {
+        if(signon == null){
             //用户不存在，返回注册页面并显示错误消息
-            System.out.println("111");
-            resetMessage = "User does not exist!";
+            return "User does not exist!";
         }
-        else
-        {
+        else{
             System.out.println(signon.getUsername());
-            ResetPassword check = userService.getResetPasswordByUserId(userId);
+            ResetPassword check = userService.getResetPasswordByUserId(user.getUsername());
             if(check == null) {
                 ResetPassword resetPassword = new ResetPassword();
-                resetPassword.setUserId(userId);
+                resetPassword.setUserId(user.getUsername());
                 resetPassword.setStatus(0);
                 userService.addResetPassword(resetPassword);
             }
-            else
-            {
+            else{
                 check.setStatus(0);
                 userService.updateResetPassword(check);
             }
 
             //返回注册页面并显示成功消息
-            resetMessage = "You have submitted a password reset request. Please wait for the administrator's review.";
+            return  "You have submitted a password reset request. Please wait for the administrator's review.";
         }
-        return "redirect:/user/returnResetResult?resetMessage=" + resetMessage;
     }
 
     @GetMapping("/returnResetResult")
@@ -164,7 +132,7 @@ public class UserController {
         return "account/edit";
     }
 
-    @RequestMapping("/edit")
+    @RequestMapping("/auth/tokens/current")
     public String editAccount(@ModelAttribute AccountVO accountVO,
                               @ModelAttribute("loginAccount") AccountVO loginAccount,
                               @ModelAttribute("repeatPassword") String repeatPassword,
@@ -181,6 +149,11 @@ public class UserController {
             model.addAttribute("loginAccount", loginAccountVO);
             return "account/edit";
         }
+    }
+
+    @GetMapping("")
+    public String getUserInfo(){
+        return "account/user";
     }
 
     @GetMapping("/examination")
