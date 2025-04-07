@@ -25,8 +25,7 @@ public class MyPetStoreSsmDevApplication {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000") // Next.js 默认端口
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowCredentials(true)
-                        .allowedHeaders("Authorization");
+                        .allowCredentials(true);
             }
         };
     }
