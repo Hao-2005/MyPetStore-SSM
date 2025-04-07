@@ -12,7 +12,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/login","/api/v1/account","api/v1/auth/login/forget").permitAll()
+                        .requestMatchers("/api/v1/auth/login","/api/v1/account","api/v1/auth/login/forget","/carts",
+                        "/carts/{itemId}","/favouriteList","/orders","/orders/{orderId}","/addresses/{addressId}","/orders/addresses").permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
