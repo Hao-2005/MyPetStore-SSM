@@ -6,17 +6,23 @@ import jakarta.servlet.http.HttpSession;
 import org.csu.petstore.entity.*;
 import org.csu.petstore.security.JwtUtil;
 import org.csu.petstore.service.CatalogService;
+import org.csu.petstore.service.OrderService;
 import org.csu.petstore.service.UserService;
 import org.csu.petstore.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -37,14 +43,8 @@ public class UserController {
     private CatalogService catalogService;
     @Autowired
     private JwtUtil jwtUtil;
-
-    @GetMapping("/viewSignon")
-    public String viewSignon(Model model)
-    {
-        String resetMessage = "";
-        model.addAttribute("resetMessage", resetMessage);
-        return "account/signon";
-    }
+    @Autowired
+    private OrderService orderService;
     
     @PostMapping("/auth/login")
     public String login(@RequestBody Signon signon) {
@@ -66,11 +66,6 @@ public class UserController {
         model.addAttribute("loginAccount", null);
         session.invalidate();
         return "catalog/main";
-    }
-
-    @GetMapping("/viewRegister")
-    public String viewRegister() {
-        return "account/register";
     }
 
     @PostMapping("/account")
@@ -119,170 +114,157 @@ public class UserController {
         }
     }
 
-    @GetMapping("/returnResetResult")
-    public String showSignonPage(String resetMessage, Model model)
-    {
-        System.out.println("2222");
-        model.addAttribute("resetMessage", resetMessage);
-        return "account/signon";
-    }
-
-    @GetMapping("/viewEdit")
-    public String viewEdit(){
-        return "account/edit";
-    }
-
     @RequestMapping("/auth/tokens/current")
     public String editAccount(@ModelAttribute AccountVO accountVO,
                               @ModelAttribute("loginAccount") AccountVO loginAccount,
                               @ModelAttribute("repeatPassword") String repeatPassword,
                               Model model) {
         accountVO.setUsername(loginAccount.getUsername());
-        if(!validate2(accountVO.getUsername(),accountVO.getPassword(),repeatPassword)){
-            model.addAttribute("editMsg", msg);
-            return "account/edit";
-        }else{
+//        if(!validate2(accountVO.getUsername(),accountVO.getPassword(),repeatPassword)){
+//            model.addAttribute("editMsg", msg);
+//            return "account/edit";
+//        }
             accountVO.setStatus("OK");
             System.out.println(accountVO);
             userService.updateAccount(accountVO);
             AccountVO loginAccountVO = userService.getAccountVOByUsername(loginAccount.getUsername());
             model.addAttribute("loginAccount", loginAccountVO);
             return "account/edit";
+    }
+
+    @GetMapping("/account/me")
+    public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authHeader) {
+        System.out.println("invoke");
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
+        AccountVO accountVO = userService.getAccountVOByUsername(username);
+        if(accountVO == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user do not exist");
+        }
+        accountVO.setPassword(null);
+        return ResponseEntity.ok(accountVO);
     }
 
-    @GetMapping("")
-    public String getUserInfo(){
-        return "account/user";
+    @GetMapping("/account/me/myOrders")
+    public ResponseEntity<?> getMyOrders(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
+        }
+        AccountVO accountVO = userService.getAccountVOByUsername(username);
+        if(accountVO == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user do not exist");
+        }
+
+        List<OrderVO> orders = orderService.getOrdersByUsername(username);
+        return ResponseEntity.ok(orders);
     }
 
-    @GetMapping("/examination")
-    @ResponseBody
-    public String examination(@RequestParam("username") String username){
+    @PostMapping("/account/myOrders/cancel")
+    public String sendReturnRequest(@RequestHeader("Authorization") String authHeader,
+                                    @RequestBody OrderCancelDTO orderCancelDTO) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if (username == null) {
+            return "invalid token";
+        }
         Signon signon = userService.getSignonByUsername(username);
-        if(signon == null||signon.getUsername()==null){
-            return "";
-        }else {
-            return "true";
-        }
-    }
-
-    @GetMapping("/viewJournal")
-    public String viewJournal(@ModelAttribute("loginAccount") AccountVO loginAccount,
-                              Model model) {
-        List<Journal> journals = userService.getAllJournals(loginAccount.getUsername());
-        model.addAttribute("journals", journals);
-        return "Journal/journal.html";
-    }
-
-    @GetMapping("/getCaptcha")
-    public void getCaptcha(HttpServletRequest request,HttpServletResponse response,Model model) throws IOException, IOException {
-        // 设置图片的宽度和高度
-        int width = 120;
-        int height = 30;
-        int codeCount = 6;
-
-        // 设置响应内容类型为图片
-        response.setContentType("image/jpeg");
-
-        // 创建一个 BufferedImage 对象
-        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = bufferedImage.createGraphics();
-
-        // 设置背景色
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, width, height);
-
-        // 设置字体
-        Font font = new Font("Fixedsys", Font.BOLD, 20);
-        g.setFont(font);
-
-        Random random = new Random();
-
-        // 添加干扰线
-        for (int i = 0; i < 20; i++) {
-            int xs = random.nextInt(width);
-            int ys = random.nextInt(height);
-            int xe = xs + random.nextInt(width / 8);
-            int ye = ys + random.nextInt(height / 8);
-            g.setColor(getRandomColor(160, 200));
-            g.drawLine(xs, ys, xe, ye);
+        if(signon == null) {
+            return "user dose not exist";
         }
 
-        // 定义验证码字符集
-        String code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-        StringBuilder captchaCode = new StringBuilder();
+        String imagePath = null;
+        if (!orderCancelDTO.getImage().isEmpty()) {
+            try {
+                String uploadDir = System.getProperty("user.dir") + "/../Images/";
+                System.out.println(uploadDir);
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs(); // 创建目录
+                }
 
-        // 随机生成验证码字符并绘制到图片上
-        for (int i = 0; i < codeCount; i++) {
-            int index = random.nextInt(code.length());
-            char strRand = code.charAt(index);
-            g.setColor(getRandomColor(80, 160));
-            g.drawString(String.valueOf(strRand), 15 * i + 6, 24);
-            captchaCode.append(strRand);
+                String fileName = orderCancelDTO.getOrderId() + ".jpg";
+                File destFile = new File(uploadDir, fileName);
+                orderCancelDTO.getImage().transferTo(destFile);
+
+                //存储图片路径
+                imagePath = "/../Images/" + fileName;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "exception"; // 返回订单页面
+            }
         }
 
-        // 释放资源
-        g.dispose();
+        orderService.insertReturnOrder(orderCancelDTO.getOrderId(), orderCancelDTO.getReason(),
+                orderCancelDTO.getDescription(), imagePath);
 
-        // 将验证码保存到 session 中
-        model.addAttribute("captcha", captchaCode.toString());
+        orderService.updateStatus(orderCancelDTO.getOrderId());
 
-        // 输出图片到响应流
-        OutputStream out = response.getOutputStream();
-        ImageIO.write(bufferedImage, "jpg", out);
-        out.flush();
-        out.close();
+        AccountVO loginAccount = userService.getAccountVOByUsername(username);
+        List<OrderVO> orderVOList = orderService.getOrdersByUsername(loginAccount.getUsername());
+
+        return "The return request has been sent and is waiting to be reviewed by the merchant.";
     }
 
 
-    private boolean validate1(String username, String password){
-        if (username == null || username.equals("")) {
-            this.msg="用户名不能为空";
-            return false;
+    @GetMapping("/account/me/myJournal")
+    public ResponseEntity<?> getMyJournal(@RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if(username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
-        if (password == null || password.equals("")) {
-            this.msg="密码不能为空";
-            return false;
+        AccountVO accountVO = userService.getAccountVOByUsername(username);
+        if(accountVO == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user do not exist");
         }
-        //其他校验
-        return true;
+        List<Journal> journals = userService.getAllJournals(username);
+        return ResponseEntity.ok(journals);
     }
-    private boolean validate2(String username, String password,String repeatPassword){
-        if (username == null || username.equals("")) {
-            this.msg="用户名不能为空";
-            return false;
+
+    @PostMapping("/auth/resetPsw")
+    public String checkResetPassword(@RequestHeader("Authorization") String authHeader,
+                                @RequestBody ResetPasswordDTO resetPasswordDTO){
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if(username == null) {
+            return "invalid token";
         }
-        if (password == null || password.equals("")) {
-            this.msg="密码不能为空";
-            return false;
+        Signon signon = userService.getSignonByUsername(username);
+        if(signon == null) {
+            return "user do not exist";
         }
-        if(!password.equals(repeatPassword)){
-            System.out.println(password+"  "+repeatPassword);
-            this.msg="两次密码不一致";
-            return false;
+        String password = signon.getPassword();
+        if(!password.equals(resetPasswordDTO.getOldPassword())){
+            return "invalid old password";
         }
-        //其他校验
-        return true;
+
+        AccountVO accountVO = userService.getAccountVOByUsername(username);
+        accountVO.setPassword(resetPasswordDTO.getNewPassword());
+        userService.updateAccount(accountVO);
+        return jwtUtil.generateToken(username);
     }
-    private Color getRandomColor(int fc, int bc) {
-        Random random = new Random();
-        if (fc > 255) fc = 255;
-        if (bc > 255) bc = 255;
-        int r = fc + random.nextInt(bc - fc);
-        int g = fc + random.nextInt(bc - fc);
-        int b = fc + random.nextInt(bc - fc);
-        return new Color(r, g, b);
-    }
-    private boolean judgeCaptcha(String captchaInput, String captcha) {
-        if(captchaInput==null || captchaInput.equals("")){
-            this.msg="请输入验证码";
-            return false;
+
+    @PutMapping("/account/me/info")
+    public String updateUserInfo(@RequestHeader("Authorization") String authHeader,@RequestBody AccountVO user){
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if(username == null) {
+            return "invalid token";
         }
-        else if(!captcha.equals(captchaInput)){
-            this.msg="验证码不正确";
-            return false;
+        AccountVO accountVO = userService.getAccountVOByUsername(username);
+        if(accountVO == null) {
+            return "user do not exist";
         }
-        return true;
+        user.setUsername(accountVO.getUsername());
+        user.setPassword(accountVO.getPassword());
+        userService.updateAccount(user);
+        return "OK";
     }
+
 }

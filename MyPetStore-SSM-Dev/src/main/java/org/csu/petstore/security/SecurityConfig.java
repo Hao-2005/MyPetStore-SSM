@@ -12,7 +12,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/login","/api/v1/account","api/v1/auth/login/forget").permitAll()
+                        .requestMatchers("/api/v1/auth/login","/api/v1/account","/api/v1/auth/login/forget"
+                        ,"/api/v1/account/me","/api/v1/account/me/myOrders", "/api/v1/account/me/myJournal"
+                        ,"/api/v1/account/me/info","api/v1/auth/resetPsw","api/v1/account/myOrders/cancel")
+                        .permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
