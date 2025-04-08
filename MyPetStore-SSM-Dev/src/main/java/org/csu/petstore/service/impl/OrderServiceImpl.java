@@ -81,11 +81,13 @@ public class OrderServiceImpl implements OrderService {
         for (LineItem lineItem : lineItemList) {
             ItemVO itemVO = catalogService.getItem(lineItem.getItemId());
             LineItemVO lineItemVO= new LineItemVO();
+            lineItemVO.setItem(itemVO);
             lineItemVO.setLineItem(lineItem);
             orderVO.addLineItem(lineItemVO);
         }
         return orderVO;
     }
+
 
     @Override
     public void insertOrder(OrderVO order) {

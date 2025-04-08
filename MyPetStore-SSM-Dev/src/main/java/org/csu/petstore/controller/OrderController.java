@@ -185,6 +185,10 @@ public class OrderController {
             order.setOrderDate(date);
             System.out.println(date);
             order.setOrderId(orderService.getNextOrderId());
+            order.setLocale("CA");
+            order.setStatus("P");
+            System.out.println(order.getUsername());
+            System.out.println(order.getBillAddress1());
             orderService.decreaseItemQuantity(order);
             orderService.insertOrder(order);
             userService.deleteCart(loginAccount.getUsername());
