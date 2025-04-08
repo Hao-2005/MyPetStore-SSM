@@ -5,6 +5,7 @@ import org.csu.petstore.service.impl.TokenBlackServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/login","/api/v1/account","/api/v1/auth/login/forget"
                         ,"/carts","/carts/{itemId}","/favouriteList","/orders","/orders/{orderId}"
-                        ,"/addresses/{addressId}","/orders/addresses", "/catalog/**", "/images/**")
+                        ,"/addresses/{addressId}","/orders/addresses", "/catalog/**", "/images/**", "/api/v1/auth/tokens/current")
                         .permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
