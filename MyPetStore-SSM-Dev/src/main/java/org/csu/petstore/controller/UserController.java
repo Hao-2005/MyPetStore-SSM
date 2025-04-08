@@ -7,6 +7,7 @@ import org.csu.petstore.entity.*;
 import org.csu.petstore.security.JwtUtil;
 import org.csu.petstore.service.CatalogService;
 import org.csu.petstore.service.OrderService;
+import org.csu.petstore.service.TokenBlackService;
 import org.csu.petstore.service.UserService;
 import org.csu.petstore.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,8 @@ public class UserController {
     private JwtUtil jwtUtil;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private TokenBlackService tokenBlackService;
     
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody Signon signon) {
@@ -55,18 +58,26 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid username or password");
     }
 
-    @GetMapping("/signOff")
-    public String signOff(@ModelAttribute("loginAccount") AccountVO loginAccount,
-                          HttpSession session,
-                          Model model) {
+    @DeleteMapping("/auth/tokens/current")
+    public ResponseEntity<?> signOff(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        if(username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
+        }
+        Signon signon = userService.getSignonByUsername(username);
+        if(signon == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid username");
+        }
+
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String currentDate = formatter.format(date);
-        String loginOutString = "User "+ loginAccount.getUsername() + " logged out.";
-        userService.updateJournal(loginAccount.getUsername(), loginOutString, currentDate, "#4472C4");
-        model.addAttribute("loginAccount", null);
-        session.invalidate();
-        return "catalog/main";
+        String loginOutString = "User "+ username + " logged out.";
+        userService.updateJournal(username, loginOutString, currentDate, "#4472C4");
+        if(!tokenBlackService.addToBlackList(token))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("something went wrong");
+        return ResponseEntity.status(HttpStatus.OK).body(loginOutString);
     }
 
     @PostMapping("/account")
@@ -118,7 +129,6 @@ public class UserController {
 
     @GetMapping("/account/me")
     public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authHeader) {
-        System.out.println("invoke");
         String token = authHeader.substring(7);
         String username = jwtUtil.extractUsername(token);
         if (username == null) {
@@ -151,7 +161,7 @@ public class UserController {
 
     @PostMapping("/account/myOrders/cancel")
     public ResponseEntity<?> sendReturnRequest(@RequestHeader("Authorization") String authHeader,
-                                    @RequestBody OrderCancelDTO orderCancelDTO) {
+                                               @ModelAttribute OrderCancelDTO orderCancelDTO) {
         String token = authHeader.substring(7);
         String username = jwtUtil.extractUsername(token);
         if (username == null) {
@@ -163,7 +173,8 @@ public class UserController {
         }
 
         String imagePath = null;
-        if (!orderCancelDTO.getImage().isEmpty()) {
+        if (orderCancelDTO.getImage() != null) {
+            System.out.println(orderCancelDTO.getImage());
             try {
                 String uploadDir = System.getProperty("user.dir") + "/../Images/";
                 System.out.println(uploadDir);
@@ -178,6 +189,7 @@ public class UserController {
 
                 //存储图片路径
                 imagePath = "/../Images/" + fileName;
+                System.out.println(imagePath);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -195,7 +207,6 @@ public class UserController {
 
         return ResponseEntity.ok("The return request has been sent and is waiting to be reviewed by the merchant.");
     }
-
 
     @GetMapping("/account/me/myJournal")
     public ResponseEntity<?> getMyJournal(@RequestHeader("Authorization") String authHeader){

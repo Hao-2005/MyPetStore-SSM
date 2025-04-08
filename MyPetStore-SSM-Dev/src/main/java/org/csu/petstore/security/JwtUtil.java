@@ -29,40 +29,24 @@ public class JwtUtil {
                 .compact();
     }
 
-    //生成短时token
-    public String generateShortToken(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_SHORT_TIME))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
     //解析token
     public String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
-
-    //解析短时token
-    public String extractShortToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(shortKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     //验证token是否有效
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build();
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);;
             return true;
         }catch (Exception e) {
             return false;
