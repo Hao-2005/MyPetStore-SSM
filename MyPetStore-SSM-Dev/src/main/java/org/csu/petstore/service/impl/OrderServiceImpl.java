@@ -6,6 +6,7 @@ import org.csu.petstore.entity.*;
 import org.csu.petstore.persistence.*;
 import org.csu.petstore.service.CatalogService;
 import org.csu.petstore.service.OrderService;
+import org.csu.petstore.service.UserService;
 import org.csu.petstore.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ public class OrderServiceImpl implements OrderService {
     private ProductMapper productMapper;
     @Autowired
     private ItemMapper itemMapper;
+    @Autowired
+    private UserService userService;
 
 
     @Override
@@ -95,11 +98,17 @@ public class OrderServiceImpl implements OrderService {
         System.out.println(order.getOrders().getOrderId());
         ordersMapper.insert(order.getOrders());
         orderStatusMapper.insert(order.getOrderStatus());
-        for (LineItemVO lineItemVO : order.getLineItems()) {
-            System.out.println("insert line item");
-            lineItemVO.setOrderId(order.getOrders().getOrderId());
-            lineItemMapper.insert(lineItemVO.getLineItem());
-            System.out.println(lineItemVO.getLineItem());
+        List<CartItemVO> cartItemVOList = userService.getCart(order.getUsername()).getItemList();
+        int i = 1;
+        for (CartItemVO cartItemVO : cartItemVOList) {
+            LineItem lineItem = new LineItem();
+            lineItem.setItemId(cartItemVO.getItem().getItemId());
+            lineItem.setQuantity(cartItemVO.getQuantity());
+            lineItem.setLineNumber(i);
+            i++;
+            lineItem.setUnitPrice(cartItemVO.getItem().getListPrice());
+            lineItem.setOrderId(order.getOrderId());
+            lineItemMapper.insert(lineItem);
         }
         System.out.println("insert order");
     }
