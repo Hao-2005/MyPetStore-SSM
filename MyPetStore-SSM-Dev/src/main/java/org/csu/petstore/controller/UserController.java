@@ -55,6 +55,13 @@ public class UserController {
             String token = jwtUtil.generateToken(signon.getUsername());
             return ResponseEntity.ok(token);
         }
+
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String currentDate = formatter.format(date);
+        String loginInString = "User "+ signon.getUsername() + " logged in.";
+        userService.updateJournal(signon.getUsername(), loginInString, currentDate, "#4472C4");
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid username or password");
     }
 
@@ -75,6 +82,7 @@ public class UserController {
         String currentDate = formatter.format(date);
         String loginOutString = "User "+ username + " logged out.";
         userService.updateJournal(username, loginOutString, currentDate, "#4472C4");
+
         if(!tokenBlackService.addToBlackList(token))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("something went wrong");
         return ResponseEntity.status(HttpStatus.OK).body(loginOutString);
@@ -92,6 +100,7 @@ public class UserController {
         String currentDate = formatter.format(date);
         String registerString = "User "+ user.getUsername() + " completed registration.";
         user.setStatus("OK");
+
         userService.updateJournal(user.getUsername(), registerString, currentDate, "#C00000");
         userService.insertAccount(user);
         String token = jwtUtil.generateToken(user.getUsername());
@@ -121,6 +130,12 @@ public class UserController {
                 check.setStatus(0);
                 userService.updateResetPassword(check);
             }
+
+            Date date = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            String currentDate = formatter.format(date);
+            String forgetPswString = "User "+ user.getUsername() + " submit a forget password request.";
+            userService.updateJournal(user.getUsername(), forgetPswString, currentDate, "#4472C4");
 
             //返回注册页面并显示成功消息
             return ResponseEntity.ok("You have submitted a password reset request. Please wait for the administrator's review.");

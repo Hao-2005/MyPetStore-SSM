@@ -15,10 +15,6 @@ public class JwtUtil {
     private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;   //一天
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
-    private final String SHORT_SECRET_KEY = "shortsecretkeymysecretkeymysecretkey";
-    private final long EXPIRATION_SHORT_TIME = 1000 * 60 * 10;  //短时token 10分钟
-    private final Key shortKey = Keys.hmacShaKeyFor(SHORT_SECRET_KEY.getBytes());
-
     //生成token
     public String generateToken(String username) {
         return Jwts.builder()
