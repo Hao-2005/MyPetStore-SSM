@@ -44,7 +44,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
             try {
                 String username = jwtUtil.extractUsername(token);
-                // 如果没有权限字段，默认给一个（即使你不需要权限）
                 List<GrantedAuthority> authorities = Collections.singletonList(
                         new SimpleGrantedAuthority("ROLE_USER")
                 );
